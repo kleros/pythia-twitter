@@ -1,0 +1,61 @@
+{
+  "name": "gtcr-twitter-bot",
+  "version": "0.1.0",
+  "main": "index.js",
+  "author": "Kleros",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "nodemon -r dotenv/config index.js",
+    "clean": "rimraf ./db/* && nodetouch ./db/.gitignore",
+    "lint:eslint:fix": "eslint '**/*.js' --fix",
+    "lint:prettier:fix": "prettier --write '**/*.js'",
+    "format": "yarn run lint:eslint:fix && yarn run lint:prettier:fix",
+    "release": "standard-version"
+  },
+  "dependencies": {
+    "@kleros/tcr": "^1.4.1",
+    "dotenv": "^8.2.0",
+    "ethers": "^4.0.44",
+    "level": "^6.0.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-unicorn": "^16.0.0",
+    "husky": "^4.2.1",
+    "nodemon": "^2.0.2",
+    "prettier": "^1.19.1",
+    "rimraf": "^3.0.1",
+    "standard-version": "^7.1.0",
+    "touch": "^3.1.0"
+  },
+  "standard": {
+    "parser": "babel-eslint",
+    "ignore": [
+      "/node_modules/**"
+    ],
+    "globals": [
+      "require"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn format",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  }
+}
