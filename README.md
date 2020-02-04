@@ -9,7 +9,7 @@
   <a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/styled_with-prettier-ff69b4.svg" alt="Styled with Prettier"></a>
 </p>
 
-Watch and tweet GTCR events.
+Watch and tweet about Generalized TCR events.
 
 ## Prerequisites
 
