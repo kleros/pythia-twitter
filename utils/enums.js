@@ -1,0 +1,10 @@
+const ITEM_STATUS = {
+  ABSENT: 0,
+  REGISTERED: 1,
+  SUBMITTED: 2,
+  REMOVAL_REQUESTED: 3
+}
+
+module.exports = {
+  ITEM_STATUS
+}

@@ -15,9 +15,12 @@
   },
   "dependencies": {
     "@kleros/tcr": "^1.4.1",
+    "bitly": "^6.1.0",
     "dotenv": "^8.2.0",
     "ethers": "^4.0.44",
-    "level": "^6.0.0"
+    "level": "^6.0.0",
+    "node-fetch": "^2.6.0",
+    "twitter-lite": "^0.9.4"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",
