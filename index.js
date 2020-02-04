@@ -8,7 +8,13 @@ const _GTCRFactory = require('@kleros/tcr/build/contracts/GTCRFactory.json')
 const _GeneralizedTCR = require('@kleros/tcr/build/contracts/GeneralizedTCR.json')
 const _GeneralizedTCRView = require('@kleros/tcr/build/contracts/GeneralizedTCRView.json')
 
-const { requestSubmittedHandler } = require('./handlers')
+const {
+  requestSubmittedHandler,
+  evidenceSubmittedHandler,
+  rulingEnforcedHandler,
+  disputeHandler,
+  requestExecutedHandler
+} = require('./handlers')
 
 const {
   utils: { formatEther }
@@ -157,39 +163,9 @@ const gtcrView = new ethers.Contract(
       })
     )
 
-    tcr.on(
-      tcr.filters.Dispute(),
-      (_arbitrator, _disputeID, _metaEvidenceID, _evidenceGroupID) => {
-        // TODO: Fetch reference to tweet in db add reply.
-        // TODO: Tweet about item challenged
-        // TODO: Add arbitrator listeners for
-        // - AppealPossible
-        // - AppealDecision
-      }
-    )
-
-    tcr.on(
-      tcr.filters.ItemStatusChange(),
-      (_itemID, _requestIndex, _roundIndex, _disputed, _resolved) => {
-        // eslint-disable-next-line no-useless-return
-        if (_disputed || !_resolved) return // Only handle final status changes.
-
-        // TODO: Fetch reference to tweet in db add reply.
-        // TODO: Tweet about request executed without challenges.
-      }
-    )
-
-    tcr.on(tcr.filters.Ruling(), (_arbitrator, _disputeID, _ruling) => {
-      // TODO: Fetch reference to tweet in db add reply.
-      // TODO: Tweet about final ruling.
-    })
-
-    tcr.on(
-      tcr.filters.Evidence(),
-      (_arbitrator, _evidenceGroupID, _party, _evidence) => {
-        // TODO: Fetch reference to tweet in db add reply.
-        // TODO: Tweet aboout new evidence.
-      }
-    )
+    tcr.on(tcr.filters.Dispute(), disputeHandler())
+    tcr.on(tcr.filters.ItemStatusChange(), requestExecutedHandler())
+    tcr.on(tcr.filters.Ruling(), rulingEnforcedHandler())
+    tcr.on(tcr.filters.Evidence(), evidenceSubmittedHandler())
   }
 })()
