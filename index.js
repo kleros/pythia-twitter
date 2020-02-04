@@ -7,8 +7,8 @@ const Twitter = require('twitter-lite')
 const _GTCRFactory = require('@kleros/tcr/build/contracts/GTCRFactory.json')
 const _GeneralizedTCR = require('@kleros/tcr/build/contracts/GeneralizedTCR.json')
 const _GeneralizedTCRView = require('@kleros/tcr/build/contracts/GeneralizedTCRView.json')
-const { articleFor } = require('./utils/string')
-const { ITEM_STATUS } = require('./utils/enums')
+
+const { requestSubmittedHandler } = require('./handlers')
 
 const {
   utils: { formatEther }
@@ -110,7 +110,7 @@ const gtcrView = new ethers.Contract(
   console.info('Done.')
 
   console.info('Fetching TCR contract information...')
-  const tcrArbitrableData = (
+  const tcrArbitrableDatas = (
     await Promise.all(
       tcrs.map(async tcr => ({
         tcrAddress: tcr.address,
@@ -146,36 +146,15 @@ const gtcrView = new ethers.Contract(
   for (const tcr of tcrs) {
     tcr.on(
       tcr.filters.RequestSubmitted(),
-      async (_itemID, _submitter, _requestType) => {
-        const {
-          metadata: { itemName, tcrTitle }
-        } = tcrMetaEvidences[tcr.address]
-        const { submissionBaseDeposit } = tcrArbitrableData[
-          tcr.address
-        ].formattedEthValues
-
-        const shortenedLink = await bitly.shorten(
-          `${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${_itemID}`
-        )
-
-        const message = `Someone ${
-          _requestType === ITEM_STATUS.SUBMITTED
-            ? 'submitted'
-            : 'requested the removal of'
-        } ${articleFor(itemName)} ${itemName} ${
-          _requestType === ITEM_STATUS.SUBMITTED ? 'to' : 'from'
-        } ${tcrTitle}. Verify it for a chance to win ${submissionBaseDeposit} #ETH
-          \n\nListing: ${shortenedLink.url}`
-
-        const tweet = await twitterClient.post('statuses/update', {
-          status: message
-        })
-
-        await db.put(
-          `${network.chainId}-${tcr.address}-${_itemID}`,
-          tweet.data.id_str
-        )
-      }
+      requestSubmittedHandler({
+        tcr,
+        tcrMetaEvidence: tcrMetaEvidences[tcr.address],
+        tcrArbitrableData: tcrArbitrableDatas[tcr.address],
+        twitterClient,
+        bitly,
+        db,
+        network
+      })
     )
 
     tcr.on(
