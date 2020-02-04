@@ -37,6 +37,7 @@ module.exports = {
     'unicorn/no-fn-reference-in-iterator': 0, // Allows [].map(func)
     'unicorn/catch-error-name': [2, { name: 'err' }],
     'unicorn/prevent-abbreviations': 'off',
+    'unicorn/no-process-exit': 'off',
 
     // import
     'import/no-unresolved': 2,

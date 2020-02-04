@@ -148,7 +148,6 @@ const gtcrView = new ethers.Contract(
           auto_populate_reply_metadata: true
         })
 
-        // TODO: Save thread ID in DB.
         await db.put(
           `${network.chainId}-${tcr.address}-${_itemID}`,
           tweet.data.id_str

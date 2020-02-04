@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/no-process-exit */
 // Twitter
 if (!process.env.CONSUMER_KEY) {
   console.error(
