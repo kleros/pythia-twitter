@@ -93,12 +93,21 @@ const gtcrView = new ethers.Contract(
         const file = await (
           await fetch(process.env.IPFS_GATEWAY + metaEvidencePath)
         ).json()
-        return { tcrAddress: tcr.address, file }
+
+        // We use a max length limit of item name and TCR title to avoid
+        // reaching twitter's char limit.
+        const itemName =
+          file.metadata.itemName.length > 7 ? 'item' : file.metadata.itemName
+        const tcrTitle =
+          file.metadata.tcrTitle.length > 11 ? 'a TCR' : file.metadata.tcrTitle
+        return {
+          tcrAddress: tcr.address,
+          file: { ...file, itemName, tcrTitle }
+        }
       })
     )
   ).reduce((acc, curr) => ({ ...acc, [curr.tcrAddress]: curr.file }), {})
   console.info('Done.')
-  console.info()
 
   console.info('Fetching TCR contract information...')
   const tcrArbitrableData = (
@@ -108,29 +117,45 @@ const gtcrView = new ethers.Contract(
         data: await gtcrView.fetchArbitrable(tcr.address)
       }))
     )
-  ).reduce((acc, curr) => ({ ...acc, [curr.tcrAddress]: curr.file }), {})
+  )
+    .map(arbitrableData => ({
+      tcrAddress: arbitrableData.tcrAddress,
+      data: {
+        ...arbitrableData.data,
+        formattedEthValues: {
+          // Format wei values to ETH.
+          submissionBaseDeposit: formatEther(
+            arbitrableData.data.submissionBaseDeposit
+          ),
+          removalBaseDeposit: formatEther(
+            arbitrableData.data.removalBaseDeposit
+          ),
+          submissionChallengeBaseDeposit: formatEther(
+            arbitrableData.data.submissionChallengeBaseDeposit
+          ),
+          removalChallengeBaseDeposit: formatEther(
+            arbitrableData.data.removalChallengeBaseDeposit
+          )
+        }
+      }
+    }))
+    .reduce((acc, curr) => ({ ...acc, [curr.tcrAddress]: curr.data }), {})
   console.info('Done.')
-  console.info()
 
   // Add listeners for events emitted by the TCRs.
   for (const tcr of tcrs) {
     tcr.on(
       tcr.filters.RequestSubmitted(),
       async (_itemID, _submitter, _requestType) => {
-        const { metadata } = tcrMetaEvidences[tcr.address]
-        const itemName =
-          metadata.itemName.length > 7 ? 'item' : metadata.itemName
-        const tcrTitle =
-          metadata.tcrTitle.length > 11 ? 'a TCR' : metadata.tcrTitle
-        const submissionBaseDeposit = formatEther(
-          tcrArbitrableData[tcr.address].submissionBaseDeposit
-        )
+        const {
+          metadata: { itemName, tcrTitle }
+        } = tcrMetaEvidences[tcr.address]
+        const { submissionBaseDeposit } = tcrArbitrableData[
+          tcr.address
+        ].formattedEthValues
+
         const shortenedLink = await bitly.shorten(
           `${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${_itemID}`
-        )
-
-        const statusId = await db.get(
-          `${network.chainId}-${tcr.address}-${_itemID}`
         )
 
         const message = `Someone ${
@@ -143,9 +168,7 @@ const gtcrView = new ethers.Contract(
           \n\nListing: ${shortenedLink.url}`
 
         const tweet = await twitterClient.post('statuses/update', {
-          status: message,
-          in_reply_to_status_id: statusId,
-          auto_populate_reply_metadata: true
+          status: message
         })
 
         await db.put(
