@@ -22,7 +22,7 @@ const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_URL)
 provider.pollingInterval = 5 * 60 * 1000 // Poll every 5 minutes.
 
 const gtcrFactory = new ethers.Contract(
-  process.env.GTCR_VIEW_ADDRESS,
+  process.env.FACTORY_ADDRESS,
   _GTCRFactory.abi,
   provider
 )
@@ -40,7 +40,7 @@ const gtcrFactory = new ethers.Contract(
 
   // Fetch the addresses of TCRs deployed with this factory.
   const logPromises = []
-  for (let fromBlock = process.env.FACTORY_BLOCK_NUM || 0; ; ) {
+  for (let fromBlock = Number(process.env.FACTORY_BLOCK_NUM) || 0; ; ) {
     logPromises.push(
       provider.getLogs({
         ...gtcrFactory.filters.NewGTCR(),
