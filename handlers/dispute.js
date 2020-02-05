@@ -23,7 +23,6 @@ module.exports = ({
   provider
 }) => async (_arbitrator, _disputeID, _metaEvidenceID, _evidenceGroupID) => {
   const itemID = tcr.arbitratorDisputeIDToItem(_arbitrator, _disputeID)
-  await db.get(`${network.chainId}-${tcr.address}-${itemID}`)
 
   const {
     metadata: { itemName }
@@ -37,9 +36,10 @@ module.exports = ({
     }
   } = tcrArbitrableData
 
-  const [shortenedLink, itemInfo] = await Promise.all([
+  const [shortenedLink, itemInfo, tweetID] = await Promise.all([
     bitly.shorten(`${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${itemID}`),
-    tcr.getItemInfo(itemID)
+    tcr.getItemInfo(itemID),
+    db.get(`${network.chainId}-${tcr.address}-${itemID}`)
   ])
   const { status } = itemInfo
   const ethAmount =
@@ -54,7 +54,9 @@ module.exports = ({
       \n\nListing: ${shortenedLink.url}`
 
   const tweet = await twitterClient.post('statuses/update', {
-    status: message
+    status: message,
+    in_reply_to_status_id: tweetID,
+    auto_populate_reply_metadata: true
   })
 
   await db.put(`${network.chainId}-${tcr.address}-${itemID}`, tweet.data.id_str)
