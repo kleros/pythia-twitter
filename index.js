@@ -149,7 +149,10 @@ const gtcrView = new ethers.Contract(
   console.info('Done.')
 
   // Add listeners for events emitted by the TCRs.
+  // Note: Arbitrator listeners are added when a dispute arises, inside the
+  // event handler for disputes (a.k.a. disputeHandler).
   for (const tcr of tcrs) {
+    // Submissions and removal requests.
     tcr.on(
       tcr.filters.RequestSubmitted(),
       requestSubmittedHandler({
@@ -163,6 +166,7 @@ const gtcrView = new ethers.Contract(
       })
     )
 
+    // Challenges.
     tcr.on(
       tcr.filters.Dispute(),
       disputeHandler({
@@ -176,8 +180,24 @@ const gtcrView = new ethers.Contract(
         provider
       })
     )
-    tcr.on(tcr.filters.ItemStatusChange(), requestExecutedHandler())
+
+    // Request executed without challenges.
+    tcr.on(
+      tcr.filters.ItemStatusChange(),
+      requestExecutedHandler({
+        tcr,
+        tcrMetaEvidence: tcrMetaEvidences[tcr.address],
+        twitterClient,
+        bitly,
+        db,
+        network
+      })
+    )
+
+    // Ruling enforced.
     tcr.on(tcr.filters.Ruling(), rulingEnforcedHandler())
+
+    // Evidence submission.
     tcr.on(tcr.filters.Evidence(), evidenceSubmittedHandler())
   }
 })()
