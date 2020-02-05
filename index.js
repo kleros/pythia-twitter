@@ -200,7 +200,17 @@ const arbitrators = {}
     )
 
     // Ruling enforced.
-    tcr.on(tcr.filters.Ruling(), rulingEnforcedHandler())
+    tcr.on(
+      tcr.filters.Ruling(),
+      rulingEnforcedHandler({
+        tcr,
+        tcrMetaEvidence: tcrMetaEvidences[tcr.address],
+        twitterClient,
+        bitly,
+        db,
+        network
+      })
+    )
 
     // Evidence submission.
     tcr.on(tcr.filters.Evidence(), evidenceSubmittedHandler())
