@@ -163,7 +163,19 @@ const gtcrView = new ethers.Contract(
       })
     )
 
-    tcr.on(tcr.filters.Dispute(), disputeHandler())
+    tcr.on(
+      tcr.filters.Dispute(),
+      disputeHandler({
+        tcr,
+        tcrMetaEvidence: tcrMetaEvidences[tcr.address],
+        tcrArbitrableData: tcrArbitrableDatas[tcr.address],
+        twitterClient,
+        bitly,
+        db,
+        network,
+        provider
+      })
+    )
     tcr.on(tcr.filters.ItemStatusChange(), requestExecutedHandler())
     tcr.on(tcr.filters.Ruling(), rulingEnforcedHandler())
     tcr.on(tcr.filters.Evidence(), evidenceSubmittedHandler())
