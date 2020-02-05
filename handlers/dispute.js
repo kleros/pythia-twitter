@@ -10,7 +10,6 @@ const {
   utils: { getAddress }
 } = ethers
 
-// eslint-disable unicorn/consistent-function-scoping
 module.exports = ({
   tcr,
   tcrMetaEvidence,
@@ -22,7 +21,7 @@ module.exports = ({
   arbitrators,
   provider
 }) => async (_arbitrator, _disputeID, _metaEvidenceID, _evidenceGroupID) => {
-  const itemID = tcr.arbitratorDisputeIDToItem(_arbitrator, _disputeID)
+  const itemID = await tcr.arbitratorDisputeIDToItem(_arbitrator, _disputeID)
 
   const {
     metadata: { itemName }

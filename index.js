@@ -47,6 +47,10 @@ const gtcrView = new ethers.Contract(
   provider
 )
 
+// Arbitrators with registered listeners.
+// This is used to avoid adding listeners for the same contract.
+const arbitrators = {}
+
 ;(async () => {
   // Initial setup.
   console.info('Booting...')
@@ -177,7 +181,8 @@ const gtcrView = new ethers.Contract(
         bitly,
         db,
         network,
-        provider
+        provider,
+        arbitrators
       })
     )
 
