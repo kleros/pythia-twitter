@@ -1,7 +1,7 @@
 const ethers = require('ethers')
 const _GeneralizedTCR = require('@kleros/tcr/build/contracts/GeneralizedTCR.json')
 
-const { articleFor } = require('./utils/string')
+const { articleFor } = require('../utils/string')
 
 module.exports = ({
   tcrMetaEvidence,

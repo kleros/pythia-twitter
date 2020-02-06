@@ -213,6 +213,16 @@ const arbitrators = {}
     )
 
     // Evidence submission.
-    tcr.on(tcr.filters.Evidence(), evidenceSubmittedHandler())
+    tcr.on(
+      tcr.filters.Evidence(),
+      evidenceSubmittedHandler({
+        tcr,
+        tcrMetaEvidence: tcrMetaEvidences[tcr.address],
+        twitterClient,
+        bitly,
+        db,
+        network
+      })
+    )
   }
 })()

@@ -2,7 +2,7 @@ const _IArbitrator = require('@kleros/tcr/build/contracts/IArbitrator.json')
 const ethers = require('ethers')
 
 const { ITEM_STATUS } = require('../utils/enums')
-const { truncateETHValue } = require('./utils/string')
+const { truncateETHValue } = require('../utils/string')
 const appealPossibleHandler = require('./appeal-possible')
 const appealDecisionHandler = require('./appeal-decision')
 
