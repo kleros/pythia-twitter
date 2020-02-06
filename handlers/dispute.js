@@ -2,7 +2,7 @@ const _IArbitrator = require('@kleros/tcr/build/contracts/IArbitrator.json')
 const ethers = require('ethers')
 
 const { ITEM_STATUS } = require('../utils/enums')
-const { truncateETH } = require('./utils/string')
+const { truncateETHValue } = require('./utils/string')
 const appealPossibleHandler = require('./appeal-possible')
 const appealDecisionHandler = require('./appeal-decision')
 
@@ -49,7 +49,7 @@ module.exports = ({
   const message = `${itemName} ${
     status === ITEM_STATUS.SUBMITTED ? 'submission' : 'removal'
   } headed to court!
-      \n\nA total of ${truncateETH(ethAmount)} #ETH is at stake.
+      \n\nA total of ${truncateETHValue(ethAmount)} #ETH is at stake.
       \n\nListing: ${shortenedLink.url}`
 
   const tweet = await twitterClient.post('statuses/update', {

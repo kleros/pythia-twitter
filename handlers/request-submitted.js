@@ -1,4 +1,4 @@
-const { articleFor, truncateETH } = require('../utils/string')
+const { articleFor, truncateETHValue } = require('../utils/string')
 const { ITEM_STATUS } = require('../utils/enums')
 
 module.exports = ({
@@ -21,7 +21,7 @@ module.exports = ({
     `${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${_itemID}`
   )
 
-  const depositETH = truncateETH(
+  const depositETH = truncateETHValue(
     _requestType === ITEM_STATUS.SUBMITTED
       ? submissionBaseDeposit
       : removalBaseDeposit

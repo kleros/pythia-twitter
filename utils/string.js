@@ -1,8 +1,12 @@
 const isVowel = c => ['a', 'e', 'i', 'o', 'u'].includes(c.toLowerCase())
-const truncateETH = (n, decimals = 2) =>
+const truncateETHValue = (n, decimals = 2) =>
   String(n).slice(0, String(n).indexOf('.') + 1 + decimals)
+
+export const truncateETHAddress = ethAddr =>
+  `${ethAddr.slice(0, 5)}...${ethAddr.slice(40)}`
 
 module.exports = {
   articleFor: str => (str && isVowel(str[0]) ? 'an' : 'a'),
-  truncateETH
+  truncateETHValue,
+  truncateETHAddress
 }
