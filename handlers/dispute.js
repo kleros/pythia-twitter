@@ -84,15 +84,12 @@ module.exports = ({
     arbitrator.on(
       arbitrator.filters.AppealDecision(),
       appealDecisionHandler({
-        tcr,
-        tcrMetaEvidence,
-        tcrArbitrableData,
         twitterClient,
-        bitly,
         db,
-        network,
-        arbitrators,
-        provider
+        provider,
+        arbitrator,
+        bitly,
+        network
       })
     )
     arbitrators[checksummedArbitratorAddr] = arbitrator
