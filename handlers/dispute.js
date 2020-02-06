@@ -72,15 +72,13 @@ module.exports = ({
     arbitrator.on(
       arbitrator.filters.AppealPossible(),
       appealPossibleHandler({
-        tcr,
         tcrMetaEvidence,
-        tcrArbitrableData,
         twitterClient,
         bitly,
         db,
         network,
-        arbitrators,
-        provider
+        provider,
+        arbitrator
       })
     )
     arbitrator.on(
