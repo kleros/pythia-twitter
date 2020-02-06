@@ -1,7 +1,7 @@
 const _IArbitrator = require('@kleros/tcr/build/contracts/IArbitrator.json')
 const ethers = require('ethers')
 
-const { ITEM_STATUS } = require('../utils/enums')
+const { ITEM_STATUS, ARBITRATORS } = require('../utils/enums')
 const { truncateETHValue, articleFor } = require('../utils/string')
 const appealPossibleHandler = require('./appeal-possible')
 const appealDecisionHandler = require('./appeal-decision')
@@ -18,7 +18,6 @@ module.exports = ({
   bitly,
   db,
   network,
-  arbitrators,
   provider
 }) => async (_arbitrator, _disputeID, _metaEvidenceID, _evidenceGroupID) => {
   const itemID = await tcr.arbitratorDisputeIDToItem(_arbitrator, _disputeID)
@@ -63,6 +62,13 @@ module.exports = ({
   await db.put(`${network.chainId}-${tcr.address}-${itemID}`, tweet.id_str)
 
   const checksummedArbitratorAddr = getAddress(_arbitrator)
+  let arbitrators = {}
+  try {
+    arbitrators = await db.get(ARBITRATORS)
+  } catch (err) {
+    if (err.type !== 'NotFoundError') throw new Error(err)
+  }
+
   if (!arbitrators[checksummedArbitratorAddr]) {
     // Add a listener for this arbitrator if there isn't one yet.
     const arbitrator = new ethers.Contract(
@@ -71,7 +77,6 @@ module.exports = ({
       provider
     )
 
-    // TODO: Save arbitrator address in db.
     arbitrator.on(
       arbitrator.filters.AppealPossible(),
       appealPossibleHandler({
@@ -95,6 +100,8 @@ module.exports = ({
         network
       })
     )
-    arbitrators[checksummedArbitratorAddr] = arbitrator
+    arbitrators[checksummedArbitratorAddr] = true
+
+    await db.put(ARBITRATORS, arbitrators)
   }
 }

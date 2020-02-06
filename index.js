@@ -7,14 +7,18 @@ const Twitter = require('twitter-lite')
 const _GTCRFactory = require('@kleros/tcr/build/contracts/GTCRFactory.json')
 const _GeneralizedTCR = require('@kleros/tcr/build/contracts/GeneralizedTCR.json')
 const _GeneralizedTCRView = require('@kleros/tcr/build/contracts/GeneralizedTCRView.json')
+const _IArbitrator = require('@kleros/tcr/build/contracts/IArbitrator.json')
 
 const {
   requestSubmittedHandler,
   evidenceSubmittedHandler,
   rulingEnforcedHandler,
   disputeHandler,
-  requestExecutedHandler
+  requestExecutedHandler,
+  appealDecisionHandler,
+  appealPossibleHandler
 } = require('./handlers')
+const { ARBITRATORS } = require('./utils/enums')
 
 const {
   utils: { formatEther }
@@ -46,10 +50,6 @@ const gtcrView = new ethers.Contract(
   _GeneralizedTCRView.abi,
   provider
 )
-
-// Arbitrators with registered listeners.
-// This is used to avoid adding listeners for the same contract.
-const arbitrators = {}
 
 ;(async () => {
   // Initial setup.
@@ -179,8 +179,7 @@ const arbitrators = {}
         bitly,
         db,
         network,
-        provider,
-        arbitrators
+        provider
       })
     )
 
@@ -224,6 +223,40 @@ const arbitrators = {}
     )
   }
 
-  // TODO: Fetch arbitrators addresses from db and add listeners.
+  // Add arbitrator listeners.
+  let arbitrators = {}
+  try {
+    arbitrators = await db.get(ARBITRATORS)
+  } catch (err) {
+    if (err.type !== 'NotFoundError') throw new Error(err)
+  }
+
+  Object.keys(arbitrators)
+    .map(address => new ethers.Contract(address, _IArbitrator.abi, provider))
+    .forEach(arbitrator => {
+      arbitrator.on(
+        arbitrator.filters.AppealPossible(),
+        appealPossibleHandler({
+          twitterClient,
+          bitly,
+          db,
+          network,
+          provider,
+          arbitrator
+        })
+      )
+      arbitrator.on(
+        arbitrator.filters.AppealDecision(),
+        appealDecisionHandler({
+          twitterClient,
+          db,
+          provider,
+          arbitrator,
+          bitly,
+          network
+        })
+      )
+    })
+
   // TODO: Watch GTCRFactory for new GTCR instances and add events listeners.
 })()

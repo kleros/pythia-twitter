@@ -6,5 +6,6 @@ const ITEM_STATUS = {
 }
 
 module.exports = {
-  ITEM_STATUS
+  ITEM_STATUS,
+  ARBITRATORS: 'ARBITRATORS_KEY'
 }

@@ -1,10 +1,7 @@
 const ethers = require('ethers')
 const _GeneralizedTCR = require('@kleros/tcr/build/contracts/GeneralizedTCR.json')
 
-const { articleFor } = require('../utils/string')
-
 module.exports = ({
-  tcrMetaEvidence,
   twitterClient,
   bitly,
   db,
@@ -17,18 +14,13 @@ module.exports = ({
     arbitrator.address,
     _disputeID
   )
-  const {
-    metadata: { itemName, tcrTitle }
-  } = tcrMetaEvidence
 
   const [shortenedLink, tweetID] = await Promise.all([
     bitly.shorten(`${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${itemID}`),
     db.get(`${network.chainId}-${tcr.address}-${itemID}`)
   ])
 
-  const message = `The arbitrator gave an appealable ruling on ${articleFor} ${articleFor(
-    itemName
-  )} ${itemName} of the ${tcrTitle} TCR. Think the ruling is incorrect? Contribute appeal fees for a chance to earn the opponent's stake!
+  const message = `The arbitrator gave an appealable ruling. Think it is incorrect? Contribute appeal fees for a chance to earn the opponent's stake!
     \n\nListing: ${shortenedLink.url}`
 
   const tweet = await twitterClient.post('statuses/update', {
