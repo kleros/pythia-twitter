@@ -2,7 +2,7 @@ const _IArbitrator = require('@kleros/tcr/build/contracts/IArbitrator.json')
 const ethers = require('ethers')
 
 const { ITEM_STATUS } = require('../utils/enums')
-const { truncateETHValue } = require('../utils/string')
+const { truncateETHValue, articleFor } = require('../utils/string')
 const appealPossibleHandler = require('./appeal-possible')
 const appealDecisionHandler = require('./appeal-decision')
 
@@ -46,7 +46,9 @@ module.exports = ({
       ? Number(submissionBaseDeposit) + Number(submissionChallengeBaseDeposit)
       : Number(removalBaseDeposit) + Number(removalChallengeBaseDeposit)
 
-  const message = `${itemName} ${
+  const message = `Challenge! ${articleFor(
+    itemName
+  ).toUpperCase()}${itemName} ${
     status === ITEM_STATUS.SUBMITTED ? 'submission' : 'removal'
   } headed to court!
       \n\nA total of ${truncateETHValue(ethAmount)} #ETH is at stake.
@@ -58,7 +60,7 @@ module.exports = ({
     auto_populate_reply_metadata: true
   })
 
-  await db.put(`${network.chainId}-${tcr.address}-${itemID}`, tweet.data.id_str)
+  await db.put(`${network.chainId}-${tcr.address}-${itemID}`, tweet.id_str)
 
   const checksummedArbitratorAddr = getAddress(_arbitrator)
   if (!arbitrators[checksummedArbitratorAddr]) {

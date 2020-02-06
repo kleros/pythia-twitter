@@ -33,8 +33,5 @@ module.exports = ({
     auto_populate_reply_metadata: true
   })
 
-  await db.put(
-    `${network.chainId}-${tcr.address}-${_itemID}`,
-    tweet.data.id_str
-  )
+  await db.put(`${network.chainId}-${tcr.address}-${_itemID}`, tweet.id_str)
 }

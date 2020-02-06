@@ -18,7 +18,7 @@ module.exports = ({
     db.get(`${network.chainId}-${tcr.address}-${itemID}`)
   ])
 
-  const message = `New evidence submitted by ${truncateETHAddr(
+  const message = `New evidence submitted by ${truncateETHAddress(
     _party
   )} for dispute on ${itemName} of ${tcrTitle} TCR.
       \n\nSee Listing: ${shortenedLink.url}`
@@ -29,5 +29,5 @@ module.exports = ({
     auto_populate_reply_metadata: true
   })
 
-  await db.put(`${network.chainId}-${tcr.address}-${itemID}`, tweet.data.id_str)
+  await db.put(`${network.chainId}-${tcr.address}-${itemID}`, tweet.id_str)
 }
