@@ -1,4 +1,4 @@
-const { truncateETHAddr } = require('../utils/string')
+const { truncateETHAddress } = require('../utils/string')
 
 module.exports = ({
   tcr,
