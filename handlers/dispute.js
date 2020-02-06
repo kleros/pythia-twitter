@@ -71,6 +71,7 @@ module.exports = ({
       provider
     )
 
+    // TODO: Save arbitrator address in db.
     arbitrator.on(
       arbitrator.filters.AppealPossible(),
       appealPossibleHandler({

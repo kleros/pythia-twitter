@@ -150,11 +150,9 @@ const arbitrators = {}
       }
     }))
     .reduce((acc, curr) => ({ ...acc, [curr.tcrAddress]: curr.data }), {})
-  console.info('Done.')
+  console.info('Done. Watching for blockchain events.')
 
   // Add listeners for events emitted by the TCRs.
-  // Note: Arbitrator listeners are added when a dispute arises, inside the
-  // event handler for disputes (a.k.a. disputeHandler).
   for (const tcr of tcrs) {
     // Submissions and removal requests.
     tcr.on(
@@ -225,4 +223,7 @@ const arbitrators = {}
       })
     )
   }
+
+  // TODO: Fetch arbitrators addresses from db and add listeners.
+  // TODO: Watch GTCRFactory for new GTCR instances and add events listeners.
 })()
