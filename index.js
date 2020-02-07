@@ -46,6 +46,30 @@ const gtcrView = new ethers.Contract(
     provider.getBlockNumber('latest'),
     provider.getNetwork()
   ])
+
+  // Add arbitrator listeners.
+  let arbitrators = {}
+  try {
+    arbitrators = JSON.parse(await db.get(ARBITRATORS))
+  } catch (err) {
+    if (err.type !== 'NotFoundError') throw new Error(err)
+  }
+
+  Object.keys(arbitrators)
+    .map(address => new ethers.Contract(address, _IArbitrator.abi, provider))
+    .forEach(arbitrator =>
+      addArbitratorListeners({
+        arbitrator,
+        twitterClient,
+        bitly,
+        db,
+        network,
+        provider
+      })
+    )
+
+  // Fetch all TCR addresses from factory logs, instantiate and add
+  // event listeners.
   const deploymentBlock = Number(process.env.FACTORY_BLOCK_NUM) || 0
 
   // Fetch logs by scanning the blockchain in batches of 4 months
@@ -91,27 +115,6 @@ const gtcrView = new ethers.Contract(
       })
     )
   )
-
-  // Add arbitrator listeners.
-  let arbitrators = {}
-  try {
-    arbitrators = JSON.parse(await db.get(ARBITRATORS))
-  } catch (err) {
-    if (err.type !== 'NotFoundError') throw new Error(err)
-  }
-
-  Object.keys(arbitrators)
-    .map(address => new ethers.Contract(address, _IArbitrator.abi, provider))
-    .forEach(arbitrator =>
-      addArbitratorListeners({
-        arbitrator,
-        twitterClient,
-        bitly,
-        db,
-        network,
-        provider
-      })
-    )
 
   // Watch for new TCRs and add listeners.
   gtcrFactory.on(gtcrFactory.filters.NewGTCR(), _address =>
