@@ -1,5 +1,4 @@
 const ethers = require('ethers')
-const fetch = require('node-fetch')
 const { BitlyClient } = require('bitly')
 const level = require('level')
 const Twitter = require('twitter-lite')
@@ -11,10 +10,6 @@ const _IArbitrator = require('@kleros/tcr/build/contracts/IArbitrator.json')
 
 const { ARBITRATORS } = require('./utils/enums')
 const { addTCRListeners, addArbitratorListeners } = require('./handlers')
-
-const {
-  utils: { formatEther }
-} = ethers
 
 const bitly = new BitlyClient(process.env.BITLY_TOKEN, {})
 const db = level('./db')
@@ -81,81 +76,21 @@ const gtcrView = new ethers.Contract(
     .map(log => gtcrFactory.interface.parseLog(log).values._address)
     .map(address => new ethers.Contract(address, _GeneralizedTCR.abi, provider))
 
-  // Fetch latest metadata for every tcr.
-  console.info('Fetching TCR meta evidence...')
-  const tcrMetaEvidences = (
-    await Promise.all(
-      tcrs.map(async tcr => {
-        const logs = (
-          await provider.getLogs({
-            ...tcr.filters.MetaEvidence(),
-            fromBlock: deploymentBlock
-          })
-        ).map(log => tcr.interface.parseLog(log))
-        const { _evidence: metaEvidencePath } = logs[logs.length - 1].values
-        const file = await (
-          await fetch(process.env.IPFS_GATEWAY + metaEvidencePath)
-        ).json()
-
-        // We use a max length limit of item name and TCR title to avoid
-        // reaching twitter's char limit.
-        const itemName =
-          file.metadata.itemName.length > 7 ? 'item' : file.metadata.itemName
-        const tcrTitle =
-          file.metadata.tcrTitle.length > 11 ? 'a TCR' : file.metadata.tcrTitle
-        return {
-          tcrAddress: tcr.address,
-          file: { ...file, itemName, tcrTitle }
-        }
+  // Add listeners for events emitted by the TCRs.
+  await Promise.all(
+    tcrs.map(tcr =>
+      addTCRListeners({
+        tcr,
+        network,
+        bitly,
+        twitterClient,
+        provider,
+        deploymentBlock,
+        gtcrView,
+        db
       })
     )
-  ).reduce((acc, curr) => ({ ...acc, [curr.tcrAddress]: curr.file }), {})
-  console.info('Done.')
-
-  console.info('Fetching TCR contract information...')
-  const tcrArbitrableDatas = (
-    await Promise.all(
-      tcrs.map(async tcr => ({
-        tcrAddress: tcr.address,
-        data: await gtcrView.fetchArbitrable(tcr.address)
-      }))
-    )
   )
-    .map(arbitrableData => ({
-      tcrAddress: arbitrableData.tcrAddress,
-      data: {
-        ...arbitrableData.data,
-        formattedEthValues: {
-          // Format wei values to ETH.
-          submissionBaseDeposit: formatEther(
-            arbitrableData.data.submissionBaseDeposit
-          ),
-          removalBaseDeposit: formatEther(
-            arbitrableData.data.removalBaseDeposit
-          ),
-          submissionChallengeBaseDeposit: formatEther(
-            arbitrableData.data.submissionChallengeBaseDeposit
-          ),
-          removalChallengeBaseDeposit: formatEther(
-            arbitrableData.data.removalChallengeBaseDeposit
-          )
-        }
-      }
-    }))
-    .reduce((acc, curr) => ({ ...acc, [curr.tcrAddress]: curr.data }), {})
-  console.info('Done. Watching for blockchain events.')
-
-  // Add listeners for events emitted by the TCRs.
-  for (const tcr of tcrs)
-    addTCRListeners({
-      tcr,
-      tcrMetaEvidence: tcrMetaEvidences[tcr.address],
-      tcrArbitrableDatas: tcrArbitrableDatas[tcr.address],
-      network,
-      bitly,
-      twitterClient,
-      provider
-    })
 
   // Add arbitrator listeners.
   let arbitrators = {}
@@ -178,5 +113,19 @@ const gtcrView = new ethers.Contract(
       })
     )
 
-  // TODO: Watch GTCRFactory for new GTCR instances and add events listeners.
+  // Watch for new TCRs and add listeners.
+  gtcrFactory.on(gtcrFactory.filters.NewGTCR(), _address =>
+    addTCRListeners({
+      tcr: new ethers.Contract(_address, _GeneralizedTCR.abi, provider),
+      network,
+      deploymentBlock,
+      bitly,
+      twitterClient,
+      provider,
+      gtcrView,
+      db
+    })
+  )
+
+  console.info('Done. Watching for blockchain events.')
 })()
