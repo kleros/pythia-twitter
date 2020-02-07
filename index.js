@@ -42,10 +42,13 @@ const gtcrView = new ethers.Contract(
 ;(async () => {
   // Initial setup.
   console.info('Booting...')
+  console.info()
   const [currBlock, network] = await Promise.all([
     provider.getBlockNumber('latest'),
     provider.getNetwork()
   ])
+  console.info(`Connected to ${network.name} of chain of ID ${network.chainId}`)
+  console.info(`GTCR Factory deployed at ${process.env.FACTORY_ADDRESS}`)
 
   // Add arbitrator listeners.
   let arbitrators = {}
@@ -130,5 +133,6 @@ const gtcrView = new ethers.Contract(
     })
   )
 
+  console.info()
   console.info('Done. Watching for blockchain events.')
 })()

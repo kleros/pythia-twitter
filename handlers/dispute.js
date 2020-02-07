@@ -103,5 +103,8 @@ module.exports = ({
     arbitrators[checksummedArbitratorAddr] = true
 
     await db.put(ARBITRATORS, JSON.stringify(arbitrators))
+    console.info(`
+      Listeners setup for arbitrator at ${checksummedArbitratorAddr}
+    `)
   }
 }

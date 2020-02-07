@@ -36,7 +36,8 @@ async function addTCRListeners({
   db,
   provider
 }) {
-  // Fetcg meta evidence.
+  console.info(`Fetching meta evidence and TCR data of TCR at ${tcr.address}`)
+  // Fetch meta evidence.
   const logs = (
     await provider.getLogs({
       ...tcr.filters.MetaEvidence(),
@@ -146,6 +147,7 @@ async function addTCRListeners({
       network
     })
   )
+  console.info(`Done fetching and setting up listeners for ${tcr.address}`)
 }
 
 /**
@@ -189,6 +191,9 @@ function addArbitratorListeners({
       network
     })
   )
+
+  console.info()
+  console.info(`Listeners setup for arbitrator at ${arbitrator.address}`)
 }
 
 module.exports = {
