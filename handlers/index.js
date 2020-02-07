@@ -45,38 +45,33 @@ async function addTCRListeners({
     })
   ).map(log => tcr.interface.parseLog(log))
   const { _evidence: metaEvidencePath } = logs[logs.length - 1].values
-  const file = await (
+  const tcrMetaEvidence = await (
     await fetch(process.env.IPFS_GATEWAY + metaEvidencePath)
   ).json()
 
   // We use a max length limit of item name and TCR title to avoid
   // reaching twitter's char limit.
-  const itemName =
-    file.metadata.itemName.length > 7 ? 'item' : file.metadata.itemName
-  const tcrTitle =
-    file.metadata.tcrTitle.length > 11 ? 'a TCR' : file.metadata.tcrTitle
-  const tcrMetaEvidence = {
-    tcrAddress: tcr.address,
-    file: { ...file, itemName, tcrTitle }
-  }
+  tcrMetaEvidence.metadata.itemName =
+    tcrMetaEvidence.metadata.itemName.length > 7
+      ? 'item'
+      : tcrMetaEvidence.metadata.itemName
+  tcrMetaEvidence.metadata.tcrTitle =
+    tcrMetaEvidence.metadata.tcrTitle.length > 11
+      ? 'a TCR'
+      : tcrMetaEvidence.metadata.tcrTitle
 
   // Fetch TCR data.
   const data = await gtcrView.fetchArbitrable(tcr.address)
   const tcrArbitrableData = {
-    tcrAddress: tcr.address,
-    data: {
-      ...data,
-      formattedEthValues: {
-        // Format wei values to ETH.
-        submissionBaseDeposit: formatEther(data.submissionBaseDeposit),
-        removalBaseDeposit: formatEther(data.removalBaseDeposit),
-        submissionChallengeBaseDeposit: formatEther(
-          data.submissionChallengeBaseDeposit
-        ),
-        removalChallengeBaseDeposit: formatEther(
-          data.removalChallengeBaseDeposit
-        )
-      }
+    ...data,
+    formattedEthValues: {
+      // Format wei values to ETH.
+      submissionBaseDeposit: formatEther(data.submissionBaseDeposit),
+      removalBaseDeposit: formatEther(data.removalBaseDeposit),
+      submissionChallengeBaseDeposit: formatEther(
+        data.submissionChallengeBaseDeposit
+      ),
+      removalChallengeBaseDeposit: formatEther(data.removalChallengeBaseDeposit)
     }
   }
 
