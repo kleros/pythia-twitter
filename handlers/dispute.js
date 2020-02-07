@@ -64,7 +64,7 @@ module.exports = ({
   const checksummedArbitratorAddr = getAddress(_arbitrator)
   let arbitrators = {}
   try {
-    arbitrators = await db.get(ARBITRATORS)
+    arbitrators = JSON.parse(await db.get(ARBITRATORS))
   } catch (err) {
     if (err.type !== 'NotFoundError') throw new Error(err)
   }
@@ -102,6 +102,6 @@ module.exports = ({
     )
     arbitrators[checksummedArbitratorAddr] = true
 
-    await db.put(ARBITRATORS, arbitrators)
+    await db.put(ARBITRATORS, JSON.stringify(arbitrators))
   }
 }

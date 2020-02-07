@@ -226,7 +226,7 @@ const gtcrView = new ethers.Contract(
   // Add arbitrator listeners.
   let arbitrators = {}
   try {
-    arbitrators = await db.get(ARBITRATORS)
+    arbitrators = JSON.parse(await db.get(ARBITRATORS))
   } catch (err) {
     if (err.type !== 'NotFoundError') throw new Error(err)
   }
