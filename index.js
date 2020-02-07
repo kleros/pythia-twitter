@@ -9,16 +9,8 @@ const _GeneralizedTCR = require('@kleros/tcr/build/contracts/GeneralizedTCR.json
 const _GeneralizedTCRView = require('@kleros/tcr/build/contracts/GeneralizedTCRView.json')
 const _IArbitrator = require('@kleros/tcr/build/contracts/IArbitrator.json')
 
-const {
-  requestSubmittedHandler,
-  evidenceSubmittedHandler,
-  rulingEnforcedHandler,
-  disputeHandler,
-  requestExecutedHandler,
-  appealDecisionHandler,
-  appealPossibleHandler
-} = require('./handlers')
 const { ARBITRATORS } = require('./utils/enums')
+const { addTCRListeners, addArbitratorListeners } = require('./handlers')
 
 const {
   utils: { formatEther }
@@ -51,6 +43,7 @@ const gtcrView = new ethers.Contract(
   provider
 )
 
+// Run bot.
 ;(async () => {
   // Initial setup.
   console.info('Booting...')
@@ -153,75 +146,16 @@ const gtcrView = new ethers.Contract(
   console.info('Done. Watching for blockchain events.')
 
   // Add listeners for events emitted by the TCRs.
-  for (const tcr of tcrs) {
-    // Submissions and removal requests.
-    tcr.on(
-      tcr.filters.RequestSubmitted(),
-      requestSubmittedHandler({
-        tcr,
-        tcrMetaEvidence: tcrMetaEvidences[tcr.address],
-        tcrArbitrableData: tcrArbitrableDatas[tcr.address],
-        twitterClient,
-        bitly,
-        db,
-        network
-      })
-    )
-
-    // Challenges.
-    tcr.on(
-      tcr.filters.Dispute(),
-      disputeHandler({
-        tcr,
-        tcrMetaEvidence: tcrMetaEvidences[tcr.address],
-        tcrArbitrableData: tcrArbitrableDatas[tcr.address],
-        twitterClient,
-        bitly,
-        db,
-        network,
-        provider
-      })
-    )
-
-    // Request executed without challenges.
-    tcr.on(
-      tcr.filters.ItemStatusChange(),
-      requestExecutedHandler({
-        tcr,
-        tcrMetaEvidence: tcrMetaEvidences[tcr.address],
-        twitterClient,
-        bitly,
-        db,
-        network
-      })
-    )
-
-    // Ruling enforced.
-    tcr.on(
-      tcr.filters.Ruling(),
-      rulingEnforcedHandler({
-        tcr,
-        tcrMetaEvidence: tcrMetaEvidences[tcr.address],
-        twitterClient,
-        bitly,
-        db,
-        network
-      })
-    )
-
-    // Evidence submission.
-    tcr.on(
-      tcr.filters.Evidence(),
-      evidenceSubmittedHandler({
-        tcr,
-        tcrMetaEvidence: tcrMetaEvidences[tcr.address],
-        twitterClient,
-        bitly,
-        db,
-        network
-      })
-    )
-  }
+  for (const tcr of tcrs)
+    addTCRListeners({
+      tcr,
+      tcrMetaEvidence: tcrMetaEvidences[tcr.address],
+      tcrArbitrableDatas: tcrArbitrableDatas[tcr.address],
+      network,
+      bitly,
+      twitterClient,
+      provider
+    })
 
   // Add arbitrator listeners.
   let arbitrators = {}
@@ -233,30 +167,16 @@ const gtcrView = new ethers.Contract(
 
   Object.keys(arbitrators)
     .map(address => new ethers.Contract(address, _IArbitrator.abi, provider))
-    .forEach(arbitrator => {
-      arbitrator.on(
-        arbitrator.filters.AppealPossible(),
-        appealPossibleHandler({
-          twitterClient,
-          bitly,
-          db,
-          network,
-          provider,
-          arbitrator
-        })
-      )
-      arbitrator.on(
-        arbitrator.filters.AppealDecision(),
-        appealDecisionHandler({
-          twitterClient,
-          db,
-          provider,
-          arbitrator,
-          bitly,
-          network
-        })
-      )
-    })
+    .forEach(arbitrator =>
+      addArbitratorListeners({
+        arbitrator,
+        twitterClient,
+        bitly,
+        db,
+        network,
+        provider
+      })
+    )
 
   // TODO: Watch GTCRFactory for new GTCR instances and add events listeners.
 })()

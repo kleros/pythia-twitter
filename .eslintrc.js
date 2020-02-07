@@ -1,12 +1,15 @@
 module.exports = {
   // Plugins
-  plugins: ['unicorn'],
+  plugins: ['unicorn', 'jsdoc', 'prettier', 'promise'],
 
   // Extends
   extends: [
     'standard', // JS Standard
     'plugin:unicorn/recommended', // unicorn
-    'plugin:prettier/recommended' // prettier overrides
+    'plugin:prettier/recommended', // prettier overrides
+    'prettier/standard',
+    'plugin:promise/recommended',
+    'plugin:jsdoc/recommended'
   ],
 
   // Rule Overrides
@@ -53,43 +56,6 @@ module.exports = {
 
     // JS Standard
     'standard/computed-property-even-spacing': 0,
-
-    // JSDoc
-    'require-jsdoc': [
-      2,
-      {
-        require: {
-          FunctionDeclaration: true,
-          MethodDefinition: false,
-          ClassDeclaration: false,
-          ArrowFunctionExpression: false,
-          FunctionExpression: false
-        }
-      }
-    ],
-    'valid-jsdoc': [
-      2,
-      {
-        prefer: {
-          arg: 'param',
-          argument: 'param',
-          class: 'class',
-          return: 'returns',
-          virtual: 'abstract'
-        },
-        preferType: {
-          Boolean: 'boolean',
-          Number: 'number',
-          Object: 'object',
-          String: 'string'
-        },
-        requireReturn: false,
-        requireReturnType: true,
-        matchDescription: '.+',
-        requireParamDescription: true,
-        requireReturnDescription: true
-      }
-    ],
 
     // prettier
     'prettier/prettier': [
