@@ -24,7 +24,7 @@ const twitterClient = new Twitter({
 require('./utils/env-check')
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_URL)
-provider.pollingInterval = 5 * 60 * 1000 // Poll every 5 minutes.
+provider.pollingInterval = 60 * 1000 // Poll every minute.
 
 const gtcrFactory = new ethers.Contract(
   process.env.FACTORY_ADDRESS,
