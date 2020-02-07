@@ -1,4 +1,5 @@
 const { truncateETHAddress } = require('../utils/string')
+const { ITEM_STATUS } = require('../utils/enums')
 
 module.exports = ({
   tcr,
@@ -9,6 +10,7 @@ module.exports = ({
   network
 }) => async (_arbitrator, _evidenceGroupID, _party, _evidence) => {
   const { itemID } = await tcr.evidenceGroupIDToRequestID(_evidenceGroupID)
+  const { status } = await tcr.getItemInfo(itemID)
   const {
     metadata: { itemName, tcrTitle }
   } = tcrMetaEvidence
@@ -18,9 +20,9 @@ module.exports = ({
     db.get(`${network.chainId}-${tcr.address}-${itemID}`)
   ])
 
-  const message = `New evidence submitted by ${truncateETHAddress(
-    _party
-  )} for dispute on ${itemName} of ${tcrTitle} TCR.
+  const message = `New evidence submitted by ${truncateETHAddress(_party)} on ${
+    status === ITEM_STATUS.REMOVAL_REQUESTED ? 'removal request' : 'submission'
+  } of ${itemName} of ${tcrTitle} TCR.
       \n\nSee Listing: ${shortenedLink.url}`
 
   const tweet = await twitterClient.post('statuses/update', {
