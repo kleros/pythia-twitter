@@ -21,7 +21,7 @@ module.exports = ({
 
   const { status } = itemInfo
   const message = `${
-    status === ITEM_STATUS.SUBMITTED
+    status === ITEM_STATUS.REGISTERED
       ? `${itemName} submission accepted into`
       : `${itemName} removed from`
   } ${tcrTitle}.
