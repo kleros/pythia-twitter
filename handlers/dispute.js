@@ -47,7 +47,7 @@ module.exports = ({
 
   const message = `Challenge! ${articleFor(
     itemName
-  ).toUpperCase()}${itemName} ${
+  ).toUpperCase()} ${itemName} ${
     status === ITEM_STATUS.SUBMITTED ? 'submission' : 'removal'
   } headed to court!
       \n\nA total of ${truncateETHValue(ethAmount)} #ETH is at stake.
