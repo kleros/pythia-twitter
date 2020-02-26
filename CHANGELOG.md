@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/kleros/gtcr-twitter-bot/compare/v1.1.0...v1.1.1) (2020-02-26)
+
+
+### Bug Fixes
+
+* incorrect status and closes [#2](https://github.com/kleros/gtcr-twitter-bot/issues/2) ([ec05166](https://github.com/kleros/gtcr-twitter-bot/commit/ec05166fcce59970e7bf0cfa76081128216a5456))
+* missing space in tweet message ([81a2d1c](https://github.com/kleros/gtcr-twitter-bot/commit/81a2d1c7379c7f34d3fa5f425716457841a518fe))
+* upgrade to bitly v4 api ([785bbe0](https://github.com/kleros/gtcr-twitter-bot/commit/785bbe021a826ae8fea50d55addfb0bf2322919c))
+
 ## 1.1.0 (2020-02-07)
 
 
