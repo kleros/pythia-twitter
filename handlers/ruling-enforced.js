@@ -24,7 +24,7 @@ module.exports = ({
   const message = `${itemName} ${
     status === ITEM_STATUS.REGISTERED ? 'listed on' : 'rejected from'
   } ${tcrTitle}. If you contributed appeal fees to the winner you have claimable rewards.
-    \n\nListing: ${shortenedLink.url}`
+    \n\nListing: ${shortenedLink}`
 
   const tweet = await twitterClient.post('statuses/update', {
     status: message,

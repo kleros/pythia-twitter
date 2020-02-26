@@ -21,7 +21,7 @@ module.exports = ({
   ])
 
   const message = `Ruling appealed! Waiting evidence and a new ruling.
-    \n\nListing: ${shortenedLink.url}`
+    \n\nListing: ${shortenedLink}`
 
   const tweet = await twitterClient.post('statuses/update', {
     status: message,

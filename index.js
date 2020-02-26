@@ -1,7 +1,7 @@
 const ethers = require('ethers')
-const { BitlyClient } = require('bitly')
 const level = require('level')
 const Twitter = require('twitter-lite')
+const fetch = require('node-fetch')
 
 const _GTCRFactory = require('@kleros/tcr/build/contracts/GTCRFactory.json')
 const _GeneralizedTCR = require('@kleros/tcr/build/contracts/GeneralizedTCR.json')
@@ -11,7 +11,6 @@ const _IArbitrator = require('@kleros/tcr/build/contracts/IArbitrator.json')
 const { ARBITRATORS } = require('./utils/enums')
 const { addTCRListeners, addArbitratorListeners } = require('./handlers')
 
-const bitly = new BitlyClient(process.env.BITLY_TOKEN, {})
 const db = level('./db')
 const twitterClient = new Twitter({
   consumer_key: process.env.CONSUMER_KEY,
@@ -43,10 +42,39 @@ const gtcrView = new ethers.Contract(
   // Initial setup.
   console.info('Booting...')
   console.info()
-  const [currBlock, network] = await Promise.all([
+  const [currBlock, network, groupIDResponse] = await Promise.all([
     provider.getBlockNumber('latest'),
-    provider.getNetwork()
+    provider.getNetwork(),
+    fetch('https://api-ssl.bitly.com/v4/groups', {
+      method: 'get',
+      headers: {
+        Authorization: `Bearer ${process.env.BITLY_TOKEN}`
+      }
+    })
   ])
+  const groupID = (await groupIDResponse.json()).groups[0].guid
+
+  const bitly = {
+    shorten: async url =>
+      `https://${
+        (
+          await (
+            await fetch('https://api-ssl.bitly.com/v4/shorten', {
+              method: 'post',
+              headers: {
+                Authorization: `Bearer ${process.env.BITLY_TOKEN}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                long_url: url,
+                group_guid: groupID
+              })
+            })
+          ).json()
+        ).id
+      }`
+  }
+
   console.info(`Connected to ${network.name} of chain of ID ${network.chainId}`)
   console.info(`GTCR Factory deployed at ${process.env.FACTORY_ADDRESS}`)
 

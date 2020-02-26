@@ -51,7 +51,7 @@ module.exports = ({
     status === ITEM_STATUS.SUBMITTED ? 'submission' : 'removal'
   } headed to court!
       \n\nA total of ${truncateETHValue(ethAmount)} #ETH is at stake.
-      \n\nListing: ${shortenedLink.url}`
+      \n\nListing: ${shortenedLink}`
 
   const tweet = await twitterClient.post('statuses/update', {
     status: message,

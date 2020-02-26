@@ -33,7 +33,7 @@ module.exports = ({
   } ${articleFor(itemName)} ${itemName} ${
     _requestType === ITEM_STATUS.SUBMITTED ? 'to' : 'from'
   } ${tcrTitle}. Verify it for a chance to win ${depositETH} #ETH
-      \n\nListing: ${shortenedLink.url}`
+      \n\nListing: ${shortenedLink}`
 
   const tweet = await twitterClient.post('statuses/update', {
     status: message

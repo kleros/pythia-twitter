@@ -25,7 +25,7 @@ module.exports = ({
       ? `${itemName} submission accepted into`
       : `${itemName} removed from`
   } ${tcrTitle}.
-    \n\nListing: ${shortenedLink.url}`
+    \n\nListing: ${shortenedLink}`
 
   const tweet = await twitterClient.post('statuses/update', {
     status: message,
