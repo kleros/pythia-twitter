@@ -5,7 +5,7 @@ const requestSubmittedHandler = require('./request-submitted')
 const evidenceSubmittedHandler = require('./evidence-submitted')
 const rulingEnforcedHandler = require('./ruling-enforced')
 const disputeHandler = require('./dispute')
-const requestExecutedHandler = require('./request-executed')
+const requestResolvedHandler = require('./request-resolved')
 const appealPossibleHandler = require('./appeal-possible')
 const appealDecisionHandler = require('./appeal-decision')
 
@@ -104,10 +104,10 @@ async function addTCRListeners({
     })
   )
 
-  // Request executed without challenges.
+  // Request resolved.
   tcr.on(
     tcr.filters.ItemStatusChange(),
-    requestExecutedHandler({
+    requestResolvedHandler({
       tcr,
       tcrMetaEvidence,
       twitterClient,
