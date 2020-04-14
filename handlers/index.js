@@ -106,7 +106,7 @@ async function addTCRListeners({
 
   // Request resolved.
   tcr.on(
-    tcr.filters.ItemStatusChange(),
+    tcr.filters.ItemStatusChange(null, null, null, null, true),
     requestResolvedHandler({
       tcr,
       tcrMetaEvidence,
