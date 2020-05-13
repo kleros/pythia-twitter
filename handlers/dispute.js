@@ -19,8 +19,11 @@ module.exports = ({
   db,
   network,
   provider
-}) => async (_arbitrator, _disputeID, _metaEvidenceID, _evidenceGroupID) => {
-  const itemID = await tcr.arbitratorDisputeIDToItem(_arbitrator, _disputeID)
+}) => async (arbitratorAddress, disputeID) => {
+  const itemID = await tcr.arbitratorDisputeIDToItem(
+    arbitratorAddress,
+    disputeID
+  )
 
   const {
     metadata: { itemName }
@@ -61,7 +64,7 @@ module.exports = ({
 
   await db.put(`${network.chainId}-${tcr.address}-${itemID}`, tweet.id_str)
 
-  const checksummedArbitratorAddr = getAddress(_arbitrator)
+  const checksummedArbitratorAddr = getAddress(arbitratorAddress)
   let arbitrators = {}
   try {
     arbitrators = JSON.parse(await db.get(ARBITRATORS))

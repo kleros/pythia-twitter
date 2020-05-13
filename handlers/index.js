@@ -106,7 +106,7 @@ async function addTCRListeners({
 
   // Request resolved.
   tcr.on(
-    tcr.filters.ItemStatusChange(null, null, null, null, true),
+    tcr.filters.ItemStatusChange(),
     requestResolvedHandler({
       tcr,
       tcrMetaEvidence,
@@ -139,7 +139,8 @@ async function addTCRListeners({
       twitterClient,
       bitly,
       db,
-      network
+      network,
+      provider
     })
   )
   console.info(`Done fetching and setting up listeners for ${tcr.address}`)

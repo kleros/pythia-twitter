@@ -7,9 +7,16 @@ module.exports = ({
   twitterClient,
   bitly,
   db,
-  network
-}) => async (_arbitrator, _evidenceGroupID, _party, _evidence) => {
-  const { itemID } = await tcr.evidenceGroupIDToRequestID(_evidenceGroupID)
+  network,
+  provider
+}) => async (_arbitrator, evidenceGroupID, party) => {
+  const { _itemID: itemID } = (
+    await provider.getLogs({
+      ...tcr.filters.RequestEvidenceGroupID(null, null, evidenceGroupID),
+      fromBlock: 0
+    })
+  ).map(log => tcr.interface.parseLog(log))[0].values
+
   const { status } = await tcr.getItemInfo(itemID)
   const {
     metadata: { itemName, tcrTitle }
@@ -20,7 +27,7 @@ module.exports = ({
     db.get(`${network.chainId}-${tcr.address}-${itemID}`)
   ])
 
-  const message = `New evidence submitted by ${truncateETHAddress(_party)} on ${
+  const message = `New evidence submitted by ${truncateETHAddress(party)} on ${
     status === ITEM_STATUS.REMOVAL_REQUESTED ? 'removal request' : 'submission'
   } of ${itemName} of ${tcrTitle} TCR.
       \n\nSee Listing: ${shortenedLink}`
