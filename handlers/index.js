@@ -8,6 +8,7 @@ const disputeHandler = require('./dispute')
 const requestResolvedHandler = require('./request-resolved')
 const appealPossibleHandler = require('./appeal-possible')
 const appealDecisionHandler = require('./appeal-decision')
+const paidFeesHandler = require('./paid-fees')
 
 const {
   utils: { formatEther }
@@ -142,6 +143,12 @@ async function addTCRListeners({
       network,
       provider
     })
+  )
+
+  // Fully funded side.
+  tcr.on(
+    tcr.filters.HasPaidAppealFee(),
+    paidFeesHandler({ tcr, twitterClient, bitly, db, network })
   )
   console.info(`Done fetching and setting up listeners for ${tcr.address}`)
 }
