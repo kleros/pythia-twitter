@@ -14,7 +14,7 @@
     "release": "standard-version"
   },
   "dependencies": {
-    "@kleros/tcr": "^1.8.1-alpha.0",
+    "@kleros/tcr": "^1.9.0-alpha.0",
     "dotenv": "^8.2.0",
     "ethers": "^4.0.44",
     "level": "^6.0.0",
