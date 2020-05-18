@@ -5,8 +5,12 @@ const truncateETHValue = (n, decimals = 2) =>
 const truncateETHAddress = ethAddr =>
   `${ethAddr.slice(0, 5)}...${ethAddr.slice(40)}`
 
+const capitalizeFirstLetter = input =>
+  input.charAt(0).toUpperCase() + input.slice(1)
+
 module.exports = {
   articleFor: str => (str && isVowel(str[0]) ? 'an' : 'a'),
   truncateETHValue,
-  truncateETHAddress
+  truncateETHAddress,
+  capitalizeFirstLetter
 }

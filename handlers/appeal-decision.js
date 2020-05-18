@@ -23,6 +23,8 @@ module.exports = ({
   const message = `Ruling appealed! Waiting evidence and a new ruling.
     \n\nListing: ${shortenedLink}`
 
+  console.info(message)
+
   const tweet = await twitterClient.post('statuses/update', {
     status: message,
     in_reply_to_status_id: tweetID,

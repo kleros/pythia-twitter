@@ -29,8 +29,12 @@ module.exports = ({
 
   const message = `New evidence submitted by ${truncateETHAddress(party)} on ${
     status === ITEM_STATUS.REMOVAL_REQUESTED ? 'removal request' : 'submission'
-  } of ${itemName} of ${tcrTitle} TCR.
+  } of ${itemName} ${
+    status === ITEM_STATUS.REMOVAL_REQUESTED ? 'from' : 'to'
+  } ${tcrTitle} TCR.
       \n\nSee Listing: ${shortenedLink}`
+
+  console.info(message)
 
   const tweet = await twitterClient.post('statuses/update', {
     status: message,

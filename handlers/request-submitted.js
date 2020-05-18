@@ -35,6 +35,8 @@ module.exports = ({
   } ${tcrTitle}. Verify it for a chance to win ${depositETH} #ETH
       \n\nListing: ${shortenedLink}`
 
+  console.info(message)
+
   const tweet = await twitterClient.post('statuses/update', {
     status: message
   })

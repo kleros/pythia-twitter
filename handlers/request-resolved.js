@@ -27,6 +27,8 @@ module.exports = ({
   } ${tcrTitle}.
     \n\nListing: ${shortenedLink}`
 
+  console.info(message)
+
   const tweet = await twitterClient.post('statuses/update', {
     status: message,
     in_reply_to_status_id: tweetID,

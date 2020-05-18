@@ -23,6 +23,8 @@ module.exports = ({
   const message = `The arbitrator gave an appealable ruling. Think it is incorrect? Contribute appeal fees for a chance to earn the opponent's stake!
     \n\nListing: ${shortenedLink}`
 
+  console.info(message)
+
   const tweet = await twitterClient.post('statuses/update', {
     status: message,
     in_reply_to_status_id: tweetID,
