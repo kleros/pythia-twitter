@@ -32,7 +32,7 @@ module.exports = ({
   } of ${itemName} ${
     status === ITEM_STATUS.REMOVAL_REQUESTED ? 'from' : 'to'
   } ${tcrTitle} TCR.
-      \n\nSee Listing: ${shortenedLink}`
+      \n\nListing: ${shortenedLink}`
 
   console.info(message)
 

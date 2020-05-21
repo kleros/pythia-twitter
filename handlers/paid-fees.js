@@ -16,7 +16,7 @@ module.exports = ({ tcr, twitterClient, bitly, db, network }) => async (
   } is fully funded. The ${
     side === PARTY.REQUESTER ? 'challenger' : 'submitter'
   } must fully fund before the deadline in order to not lose the case.
-      \n\nSee Listing: ${shortenedLink}`
+      \n\nListing: ${shortenedLink}`
 
   console.info(message)
 
