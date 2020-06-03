@@ -20,7 +20,7 @@ module.exports = ({
     db.get(`${network.chainId}-${tcr.address}-${itemID}`)
   ])
 
-  const message = `Ruling appealed! Waiting evidence and a new ruling.
+  const message = `Ruling appealed! Waiting for evidence and a new ruling.
     \n\nListing: ${shortenedLink}`
 
   console.info(message)
