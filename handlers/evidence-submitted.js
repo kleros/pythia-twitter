@@ -27,11 +27,11 @@ module.exports = ({
     db.get(`${network.chainId}-${tcr.address}-${itemID}`)
   ])
 
-  const message = `New evidence submitted by ${truncateETHAddress(party)} on ${
+  const message = `New evidence has been submitted by ${truncateETHAddress(party)} on the ${
     status === ITEM_STATUS.REMOVAL_REQUESTED ? 'removal request' : 'submission'
   } of ${itemName} ${
-    status === ITEM_STATUS.REMOVAL_REQUESTED ? 'from' : 'to'
-  } ${tcrTitle} TCR.
+    status === ITEM_STATUS.REMOVAL_REQUESTED ? 'from the' : 'to the'
+  } ${tcrTitle} List.
       \n\nListing: ${shortenedLink}`
 
   console.info(message)
