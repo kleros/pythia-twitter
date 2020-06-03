@@ -22,9 +22,9 @@ module.exports = ({
   const { status } = itemInfo
   const message = `${
     status === ITEM_STATUS.REGISTERED
-      ? `${itemName} submission accepted into`
-      : `${itemName} removed from`
-  } ${tcrTitle}.
+      ? `${itemName} accepted into the`
+      : `${itemName} removed from the`
+  } ${tcrTitle} List.
     \n\nListing: ${shortenedLink}`
 
   console.info(message)
