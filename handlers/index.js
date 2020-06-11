@@ -58,7 +58,7 @@ async function addTCRListeners({
       : tcrMetaEvidence.metadata.itemName
   tcrMetaEvidence.metadata.tcrTitle =
     tcrMetaEvidence.metadata.tcrTitle.length > 11
-      ? 'a TCR'
+      ? 'a list'
       : tcrMetaEvidence.metadata.tcrTitle
 
   // Fetch TCR data.
