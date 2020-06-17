@@ -50,17 +50,6 @@ async function addTCRListeners({
     await fetch(process.env.IPFS_GATEWAY + metaEvidencePath)
   ).json()
 
-  // We use a max length limit of item name and TCR title to avoid
-  // reaching twitter's char limit.
-  tcrMetaEvidence.metadata.itemName =
-    tcrMetaEvidence.metadata.itemName.length > 7
-      ? 'item'
-      : tcrMetaEvidence.metadata.itemName
-  tcrMetaEvidence.metadata.tcrTitle =
-    tcrMetaEvidence.metadata.tcrTitle.length > 11
-      ? 'a list'
-      : tcrMetaEvidence.metadata.tcrTitle
-
   // Fetch TCR data.
   const data = await gtcrView.fetchArbitrable(tcr.address)
   const tcrArbitrableData = {
