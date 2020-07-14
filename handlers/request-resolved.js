@@ -1,4 +1,5 @@
 const { ITEM_STATUS } = require('../utils/enums')
+const { capitalizeFirstLetter } = require('../utils/string')
 
 module.exports = ({
   tcr,
@@ -22,8 +23,8 @@ module.exports = ({
   const { status } = itemInfo
   const message = `${
     status === ITEM_STATUS.REGISTERED
-      ? `${itemName} accepted into the`
-      : `${itemName} removed from the`
+      ? `${capitalizeFirstLetter(itemName)} accepted into the`
+      : `${capitalizeFirstLetter(itemName)} removed from the`
   } ${tcrTitle} List.
     \n\nListing: ${shortenedLink}`
 
