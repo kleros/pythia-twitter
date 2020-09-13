@@ -18,7 +18,7 @@
     "dotenv": "^8.2.0",
     "ethers": "^4.0.44",
     "level": "^6.0.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "twitter-lite": "^0.9.4"
   },
   "devDependencies": {
