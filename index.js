@@ -3,37 +3,41 @@ const level = require('level')
 const Twitter = require('twitter-lite')
 const fetch = require('node-fetch')
 
-const _GTCRFactory = require('@kleros/tcr/build/contracts/GTCRFactory.json')
-const _GeneralizedTCR = require('@kleros/tcr/build/contracts/GeneralizedTCR.json')
-const _GeneralizedTCRView = require('@kleros/tcr/build/contracts/GeneralizedTCRView.json')
-const _IArbitrator = require('@kleros/tcr/build/contracts/IArbitrator.json')
+const _GTCRFactory = require('./abis/GTCRFactory.json')
+const _GeneralizedTCR = require('./abis/GeneralizedTCR.json')
+const _GeneralizedTCRView = require('./abis/GeneralizedTCRView.json')
+const _IArbitrator = require('./abis/IArbitrator.json')
 
 const { ARBITRATORS } = require('./utils/enums')
-const { addTCRListeners, addArbitratorListeners } = require('./handlers')
+const { addTCRListeners, addArbitratorListeners } = require('./gtcr-handlers')
 
 const db = level('./db')
-const twitterClient = new Twitter({
-  consumer_key: process.env.CONSUMER_KEY,
-  consumer_secret: process.env.CONSUMER_SECRET,
-  access_token_key: process.env.ACCESS_TOKEN,
-  access_token_secret: process.env.ACCESS_TOKEN_SECRET
-})
-
-// Run env variable checks.
-require('./utils/env-check')
+let twitterClient
+if (
+  !!process.env.CONSUMER_KEY &&
+  !!process.env.CONSUMER_SECRET &&
+  !!process.env.ACCESS_TOKEN &&
+  !!process.env.ACCESS_TOKEN_SECRET
+)
+  twitterClient = new Twitter({
+    consumer_key: process.env.CONSUMER_KEY,
+    consumer_secret: process.env.CONSUMER_SECRET,
+    access_token_key: process.env.ACCESS_TOKEN,
+    access_token_secret: process.env.ACCESS_TOKEN_SECRET
+  })
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_URL)
 provider.pollingInterval = 60 * 1000 // Poll every minute.
 
 const gtcrFactory = new ethers.Contract(
   process.env.FACTORY_ADDRESS,
-  _GTCRFactory.abi,
+  _GTCRFactory,
   provider
 )
 
 const gtcrView = new ethers.Contract(
   process.env.GENERALIZED_TCR_VIEW_ADDRESS,
-  _GeneralizedTCRView.abi,
+  _GeneralizedTCRView,
   provider
 )
 
@@ -53,6 +57,7 @@ const gtcrView = new ethers.Contract(
     })
   ])
   const groupID = (await groupIDResponse.json()).groups[0].guid
+  console.info('Got bitly groupID')
 
   const bitly = {
     shorten: async url =>
@@ -87,7 +92,7 @@ const gtcrView = new ethers.Contract(
   }
 
   Object.keys(arbitrators)
-    .map(address => new ethers.Contract(address, _IArbitrator.abi, provider))
+    .map(address => new ethers.Contract(address, _IArbitrator, provider))
     .forEach(arbitrator =>
       addArbitratorListeners({
         arbitrator,
@@ -129,7 +134,7 @@ const gtcrView = new ethers.Contract(
   const tcrs = (await Promise.all(logPromises))
     .reduce((acc, curr) => acc.concat(curr), [])
     .map(log => gtcrFactory.interface.parseLog(log).values._address)
-    .map(address => new ethers.Contract(address, _GeneralizedTCR.abi, provider))
+    .map(address => new ethers.Contract(address, _GeneralizedTCR, provider))
 
   // Add listeners for events emitted by the TCRs.
   await Promise.all(
@@ -150,7 +155,7 @@ const gtcrView = new ethers.Contract(
   // Watch for new TCRs and add listeners.
   gtcrFactory.on(gtcrFactory.filters.NewGTCR(), _address =>
     addTCRListeners({
-      tcr: new ethers.Contract(_address, _GeneralizedTCR.abi, provider),
+      tcr: new ethers.Contract(_address, _GeneralizedTCR, provider),
       network,
       deploymentBlock,
       bitly,

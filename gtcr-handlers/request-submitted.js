@@ -37,9 +37,11 @@ module.exports = ({
 
   console.info(message)
 
-  const tweet = await twitterClient.post('statuses/update', {
-    status: message
-  })
+  if (twitterClient) {
+    const tweet = await twitterClient.post('statuses/update', {
+      status: message
+    })
 
-  await db.put(`${network.chainId}-${tcr.address}-${_itemID}`, tweet.id_str)
+    await db.put(`${network.chainId}-${tcr.address}-${_itemID}`, tweet.id_str)
+  }
 }

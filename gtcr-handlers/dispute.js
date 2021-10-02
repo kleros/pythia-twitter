@@ -1,4 +1,4 @@
-const _IArbitrator = require('@kleros/tcr/build/contracts/IArbitrator.json')
+const _IArbitrator = require('../abis/IArbitrator.json')
 const ethers = require('ethers')
 
 const { ITEM_STATUS, ARBITRATORS } = require('../utils/enums')
@@ -56,13 +56,15 @@ module.exports = ({
       \n\nA total of ${truncateETHValue(ethAmount)} #ETH is at stake.
       \n\nListing: ${shortenedLink}`
 
-  const tweet = await twitterClient.post('statuses/update', {
-    status: message,
-    in_reply_to_status_id: tweetID,
-    auto_populate_reply_metadata: true
-  })
+  if (twitterClient) {
+    const tweet = await twitterClient.post('statuses/update', {
+      status: message,
+      in_reply_to_status_id: tweetID,
+      auto_populate_reply_metadata: true
+    })
 
-  await db.put(`${network.chainId}-${tcr.address}-${itemID}`, tweet.id_str)
+    await db.put(`${network.chainId}-${tcr.address}-${itemID}`, tweet.id_str)
+  }
 
   const checksummedArbitratorAddr = getAddress(arbitratorAddress)
   let arbitrators = {}
@@ -76,7 +78,7 @@ module.exports = ({
     // Add a listener for this arbitrator if there isn't one yet.
     const arbitrator = new ethers.Contract(
       checksummedArbitratorAddr,
-      _IArbitrator.abi,
+      _IArbitrator,
       provider
     )
 

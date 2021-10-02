@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "nodemon -r dotenv/config index.js",
+    "start": "nodemon -r dotenv-safe/config index.js",
     "clean": "rimraf ./db/* && nodetouch ./db/.gitkeep",
     "lint:eslint:fix": "eslint '**/*.js' --fix",
     "lint:prettier:fix": "prettier --write '**/*.js'",
@@ -14,8 +14,7 @@
     "release": "standard-version"
   },
   "dependencies": {
-    "@kleros/tcr": "^1.9.0-alpha.0",
-    "dotenv": "^8.2.0",
+    "dotenv-safe": "^8.2.0",
     "ethers": "^4.0.44",
     "level": "^6.0.0",
     "node-fetch": "^2.6.1",
@@ -60,5 +59,8 @@
       "pre-commit": "yarn format",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
+  },
+  "volta": {
+    "node": "10.24.1"
   }
 }
