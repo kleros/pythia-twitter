@@ -1,4 +1,4 @@
-const { PARTY } = require('../utils/enums')
+const { PARTY } = require('../../utils/enums')
 
 module.exports = ({ tcr, twitterClient, bitly, db, network }) => async (
   itemID,

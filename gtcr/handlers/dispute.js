@@ -1,8 +1,8 @@
-const _IArbitrator = require('../abis/IArbitrator.json')
+const _IArbitrator = require('../../abis/IArbitrator.json')
 const ethers = require('ethers')
 
-const { ITEM_STATUS, ARBITRATORS } = require('../utils/enums')
-const { truncateETHValue, articleFor } = require('../utils/string')
+const { ITEM_STATUS, ARBITRATORS } = require('../../utils/enums')
+const { truncateETHValue, articleFor } = require('../../utils/string')
 const appealPossibleHandler = require('./appeal-possible')
 const appealDecisionHandler = require('./appeal-decision')
 

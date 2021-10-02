@@ -1,5 +1,5 @@
-const { ITEM_STATUS } = require('../utils/enums')
-const { capitalizeFirstLetter } = require('../utils/string')
+const { ITEM_STATUS } = require('../../utils/enums')
+const { capitalizeFirstLetter } = require('../../utils/string')
 
 module.exports = ({
   tcr,

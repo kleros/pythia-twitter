@@ -1,5 +1,5 @@
-const { truncateETHAddress } = require('../utils/string')
-const { ITEM_STATUS } = require('../utils/enums')
+const { truncateETHAddress } = require('../../utils/string')
+const { ITEM_STATUS } = require('../../utils/enums')
 
 module.exports = ({
   tcr,

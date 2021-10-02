@@ -1,13 +1,13 @@
 const ethers = require('ethers')
-const _GeneralizedTCR = require('../abis/GeneralizedTCR.json')
+const _GeneralizedTCR = require('../../abis/GeneralizedTCR.json')
 
 module.exports = ({
   twitterClient,
-  bitly,
   db,
-  network,
   provider,
-  arbitrator
+  arbitrator,
+  bitly,
+  network
 }) => async (_disputeID, _arbitrable) => {
   const tcr = new ethers.Contract(_arbitrable, _GeneralizedTCR, provider)
   const itemID = await tcr.arbitratorDisputeIDToItem(
@@ -20,7 +20,7 @@ module.exports = ({
     db.get(`${network.chainId}-${tcr.address}-${itemID}`)
   ])
 
-  const message = `The arbitrator gave an appealable ruling. Think it is incorrect? Contribute appeal fees for a chance to earn the opponent's stake!
+  const message = `Ruling appealed! Waiting for evidence and a new ruling.
     \n\nListing: ${shortenedLink}`
 
   console.info(message)
