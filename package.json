@@ -14,6 +14,7 @@
     "release": "standard-version"
   },
   "dependencies": {
+    "delay": "^5.0.0",
     "dotenv-safe": "^8.2.0",
     "ethers": "^4.0.44",
     "level": "^6.0.0",
