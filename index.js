@@ -1,6 +1,7 @@
 const ethers = require('ethers')
 const level = require('level')
 const Twitter = require('twitter-lite')
+const fetch = require('node-fetch')
 
 const _GTCRFactory = require('./abis/GTCRFactory.json')
 const _GeneralizedTCRView = require('./abis/GeneralizedTCRView.json')
@@ -37,4 +38,38 @@ const gtcrView = new ethers.Contract(
   provider
 )
 
-gtcrBot(provider, gtcrFactory, twitterClient, gtcrView, db)
+;(async () => {
+  console.info('Instantiating bitly client:', process.env.BITLY_TOKEN)
+  const groupIDResponse = await fetch('https://api-ssl.bitly.com/v4/groups', {
+    method: 'get',
+    headers: {
+      Authorization: `Bearer ${process.env.BITLY_TOKEN}`
+    }
+  })
+
+  console.info('Got bitly groupID')
+  const groupID = (await groupIDResponse.json()).groups[0].guid
+
+  const bitly = {
+    shorten: async url =>
+      `https://${
+        (
+          await (
+            await fetch('https://api-ssl.bitly.com/v4/shorten', {
+              method: 'post',
+              headers: {
+                Authorization: `Bearer ${process.env.BITLY_TOKEN}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                long_url: url,
+                group_guid: groupID
+              })
+            })
+          ).json()
+        ).id
+      }`
+  }
+
+  gtcrBot(provider, gtcrFactory, twitterClient, gtcrView, db, bitly)
+})()
