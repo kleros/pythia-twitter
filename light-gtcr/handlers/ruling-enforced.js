@@ -9,7 +9,6 @@ module.exports = ({
   db,
   network
 }) => async (_arbitrator, _disputeID, _ruling) => {
-  console.info('ruling event')
   const itemID = await tcr.arbitratorDisputeIDToItemID(_arbitrator, _disputeID)
 
   const {

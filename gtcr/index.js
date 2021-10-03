@@ -18,7 +18,7 @@ const { ARBITRATORS } = require('../utils/enums')
  */
 async function bot(provider, gtcrFactory, twitterClient, gtcrView, db, bitly) {
   // Initial setup.
-  console.info('Booting...')
+  console.info('Booting gtcr bots...')
   const [currBlock, network] = await Promise.all([
     provider.getBlockNumber('latest'),
     provider.getNetwork()

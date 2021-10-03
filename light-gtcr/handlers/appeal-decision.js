@@ -36,8 +36,6 @@ module.exports = ({
     return
   }
 
-  console.info('got item ID')
-
   const shortenedLink = 'TEST' // TODO: REMOVE THIS
   const tweetID = 'tweetIDTether' // TODO: REMOVE THIS
   // const [shortenedLink, tweetID] = await Promise.all([

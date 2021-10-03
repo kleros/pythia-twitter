@@ -25,7 +25,7 @@ async function bot(
   bitly
 ) {
   // Initial setup.
-  console.info('Booting...')
+  console.info('Booting Light GTCR bots...')
   const [currBlock, network] = await Promise.all([
     provider.getBlockNumber('latest'),
     provider.getNetwork()

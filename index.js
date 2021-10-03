@@ -3,12 +3,12 @@ const level = require('level')
 const Twitter = require('twitter-lite')
 const fetch = require('node-fetch')
 
-// const _GTCRFactory = require('./abis/GTCRFactory.json')
-// const _GeneralizedTCRView = require('./abis/GeneralizedTCRView.json')
+const _GTCRFactory = require('./abis/GTCRFactory.json')
+const _GeneralizedTCRView = require('./abis/GeneralizedTCRView.json')
 const _LightGTCRFactory = require('./abis/LightGTCRFactory.json')
 const _LightGeneralizedTCRView = require('./abis/LightGeneralizedTCRView.json')
 
-// const gtcrBot = require('./gtcr')
+const gtcrBot = require('./gtcr')
 const lightGtcrBot = require('./light-gtcr')
 
 const db = level('./db')
@@ -29,17 +29,17 @@ if (
 const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_URL)
 provider.pollingInterval = 60 * 1000 // Poll every minute.
 
-// const gtcrFactory = new ethers.Contract(
-//   process.env.FACTORY_ADDRESS,
-//   _GTCRFactory,
-//   provider
-// )
+const gtcrFactory = new ethers.Contract(
+  process.env.FACTORY_ADDRESS,
+  _GTCRFactory,
+  provider
+)
 
-// const gtcrView = new ethers.Contract(
-//   process.env.GENERALIZED_TCR_VIEW_ADDRESS,
-//   _GeneralizedTCRView,
-//   provider
-// )
+const gtcrView = new ethers.Contract(
+  process.env.GENERALIZED_TCR_VIEW_ADDRESS,
+  _GeneralizedTCRView,
+  provider
+)
 
 const lightGtcrFactory = new ethers.Contract(
   process.env.LFACTORY_ADDRESS,
@@ -87,8 +87,7 @@ const lightGtcrView = new ethers.Contract(
       }`
   }
 
-  // TODO: RE-ENABLE THIS
-  // gtcrBot(provider, gtcrFactory, twitterClient, gtcrView, db, bitly)
+  gtcrBot(provider, gtcrFactory, twitterClient, gtcrView, db, bitly)
   lightGtcrBot(
     provider,
     lightGtcrFactory,

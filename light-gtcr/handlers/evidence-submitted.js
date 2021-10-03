@@ -36,7 +36,6 @@ module.exports = ({
     body: JSON.stringify(subgraphQuery)
   })
   const parsedValues = await response.json()
-  console.info(JSON.stringify(parsedValues))
   const itemID = parsedValues.data.lrequests[0].item.itemID
 
   const { status } = await tcr.getItemInfo(itemID)

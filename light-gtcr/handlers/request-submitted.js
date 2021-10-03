@@ -40,7 +40,6 @@ module.exports = ({
     body: JSON.stringify(subgraphQuery)
   })
   const parsedValues = await response.json()
-  console.info(JSON.stringify(parsedValues))
   const requestType = parsedValues.data.lrequests[0].requestType
 
   const depositETH = truncateETHValue(
