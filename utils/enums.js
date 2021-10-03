@@ -14,5 +14,7 @@ const PARTY = {
 module.exports = {
   ITEM_STATUS,
   ARBITRATORS: 'ARBITRATORS_KEY',
-  PARTY
+  PARTY,
+  GTCRS: 'GTCRS_KEY',
+  LGTCRS: 'LGTCRS_KEY'
 }

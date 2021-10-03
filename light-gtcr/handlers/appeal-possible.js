@@ -1,5 +1,6 @@
 const ethers = require('ethers')
 const _LightGeneralizedTCR = require('../../abis/LightGeneralizedTCR.json')
+const { LGTCRS } = require('../../utils/enums')
 
 module.exports = ({
   twitterClient,
@@ -9,12 +10,31 @@ module.exports = ({
   provider,
   arbitrator
 }) => async (_disputeID, _arbitrable) => {
-  console.info('appeal possible event')
+  // Detect if this is related to a gtcr instance
+  let lgtcrs = {}
+  try {
+    lgtcrs = JSON.parse(await db.get(LGTCRS))
+  } catch (err) {
+    if (err.type !== 'NotFoundError') throw new Error(err) // Ignore event
+  }
+  if (!lgtcrs[_arbitrable.toLowerCase()]) return // Event not related to a light-gtcr.
+
   const tcr = new ethers.Contract(_arbitrable, _LightGeneralizedTCR, provider)
-  const itemID = await tcr.arbitratorDisputeIDToItemID(
-    arbitrator.address,
-    _disputeID
-  )
+  let itemID
+  try {
+    itemID = await tcr.arbitratorDisputeIDToItemID(
+      arbitrator.address,
+      Number(_disputeID)
+    )
+  } catch (err) {
+    console.error(
+      `Error fetching itemID (AppealPossible), tcrAddr ${
+        tcr.address
+      }, disputeID ${Number(_disputeID)}, arbitrable ${_arbitrable}`,
+      err
+    )
+    return
+  }
 
   const shortenedLink = 'TEST' // TODO: REMOVE THIS
   const tweetID = 'tweetIDTether' // TODO: REMOVE THIS

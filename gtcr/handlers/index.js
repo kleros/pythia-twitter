@@ -9,6 +9,7 @@ const requestResolvedHandler = require('./request-resolved')
 const appealPossibleHandler = require('./appeal-possible')
 const appealDecisionHandler = require('./appeal-decision')
 const paidFeesHandler = require('./paid-fees')
+const { GTCRS } = require('../../utils/enums')
 
 const {
   utils: { formatEther }
@@ -64,6 +65,15 @@ async function addTCRListeners({
       removalChallengeBaseDeposit: formatEther(data.removalChallengeBaseDeposit)
     }
   }
+
+  let gtcrs = {}
+  try {
+    gtcrs = JSON.parse(await db.get(GTCRS))
+  } catch (err) {
+    if (err.type !== 'NotFoundError') throw new Error(err)
+  }
+  gtcrs[tcr.address.toLowerCase()] = true
+  await db.put(GTCRS, JSON.stringify(gtcrs))
 
   // Submissions and removal requests.
   tcr.on(

@@ -1,5 +1,6 @@
 const ethers = require('ethers')
 const _GeneralizedTCR = require('../../abis/GeneralizedTCR.json')
+const { GTCRS } = require('../../utils/enums')
 
 module.exports = ({
   twitterClient,
@@ -9,10 +10,20 @@ module.exports = ({
   bitly,
   network
 }) => async (_disputeID, _arbitrable) => {
+  // Detect if this is related to a gtcr instance
+  let gtcrs = {}
+  try {
+    gtcrs = JSON.parse(await db.get(GTCRS))
+  } catch (err) {
+    if (err.type !== 'NotFoundError') throw new Error(err)
+    return // Ignore event.
+  }
+  if (!gtcrs[_arbitrable.toLowerCase()]) return // Event not related to a gtcr.
+
   const tcr = new ethers.Contract(_arbitrable, _GeneralizedTCR, provider)
   const itemID = await tcr.arbitratorDisputeIDToItem(
     arbitrator.address,
-    _disputeID
+    Number(_disputeID)
   )
 
   const [shortenedLink, tweetID] = await Promise.all([

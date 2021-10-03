@@ -8,6 +8,7 @@ const rulingEnforcedHandler = require('./ruling-enforced')
 const evidenceSubmittedHandler = require('./evidence-submitted')
 const appealPossibleHandler = require('./appeal-possible')
 const appealDecisionHandler = require('./appeal-decision')
+const { LGTCRS } = require('../../utils/enums')
 
 const {
   utils: { formatEther }
@@ -82,6 +83,15 @@ async function addTCRListeners({
       removalChallengeBaseDeposit: formatEther(data.removalChallengeBaseDeposit)
     }
   }
+
+  let lgtcrs = {}
+  try {
+    lgtcrs = JSON.parse(await db.get(LGTCRS))
+  } catch (err) {
+    if (err.type !== 'NotFoundError') throw new Error(err)
+  }
+  lgtcrs[tcr.address.toLowerCase()] = true
+  await db.put(LGTCRS, JSON.stringify(lgtcrs))
 
   // Submissions and removal requests.
   tcr.on(
