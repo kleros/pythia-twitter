@@ -15,12 +15,10 @@ module.exports = ({
     metadata: { itemName, tcrTitle }
   } = tcrMetaEvidence
 
-  const shortenedLink = 'TEST' // TODO: REMOVE THIS
-  const tweetID = 'tweetIDTether' // TODO: REMOVE THIS
-  // const [shortenedLink, tweetID] = await Promise.all([
-  //   bitly.shorten(`${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${itemID}`),
-  //   db.get(`${network.chainId}-${tcr.address}-${itemID}`)
-  // ])
+  const [shortenedLink, tweetID] = await Promise.all([
+    bitly.shorten(`${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${itemID}`),
+    db.get(`${network.chainId}-${tcr.address}-${itemID}`)
+  ])
 
   const itemInfo = await tcr.getItemInfo(itemID)
   const { status } = itemInfo

@@ -55,15 +55,14 @@ const lightGtcrView = new ethers.Contract(
 
 ;(async () => {
   console.info('Instantiating bitly client:', process.env.BITLY_TOKEN)
-  // const groupIDResponse = await fetch('https://api-ssl.bitly.com/v4/groups', {
-  //   method: 'get',
-  //   headers: {
-  //     Authorization: `Bearer ${process.env.BITLY_TOKEN}`
-  //   }
-  // })
+  const groupIDResponse = await fetch('https://api-ssl.bitly.com/v4/groups', {
+    method: 'get',
+    headers: {
+      Authorization: `Bearer ${process.env.BITLY_TOKEN}`
+    }
+  })
 
-  // const groupID = (await groupIDResponse.json()).groups[0].guid
-  const groupID = 'Bla2ivZyBPW'
+  const groupID = (await groupIDResponse.json()).groups[0].guid
   console.info(`Got bitly groupID ${groupID}`)
 
   const bitly = {

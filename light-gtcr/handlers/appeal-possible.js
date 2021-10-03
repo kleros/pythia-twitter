@@ -36,12 +36,10 @@ module.exports = ({
     return
   }
 
-  const shortenedLink = 'TEST' // TODO: REMOVE THIS
-  const tweetID = 'tweetIDTether' // TODO: REMOVE THIS
-  // const [shortenedLink, tweetID] = await Promise.all([
-  //   bitly.shorten(`${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${itemID}`),
-  //   db.get(`${network.chainId}-${tcr.address}-${itemID}`)
-  // ])
+  const [shortenedLink, tweetID] = await Promise.all([
+    bitly.shorten(`${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${itemID}`),
+    db.get(`${network.chainId}-${tcr.address}-${itemID}`)
+  ])
 
   const message = `The arbitrator gave an appealable ruling. Think it is incorrect? Contribute appeal fees for a chance to earn the opponent's stake!
     \n\nListing: ${shortenedLink}`

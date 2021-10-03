@@ -19,10 +19,9 @@ module.exports = ({
     formattedEthValues: { submissionBaseDeposit, removalBaseDeposit }
   } = tcrArbitrableData
 
-  const shortenedLink = 'TEST' // TODO: REMOVE THIS
-  // const shortenedLink = await bitly.shorten(
-  //   `${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${_itemID}`
-  // )
+  const shortenedLink = await bitly.shorten(
+    `${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${_itemID}`
+  )
 
   // Wait a bit to ensure subgraph is synced.
   await delay(20 * 1000)

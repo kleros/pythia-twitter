@@ -43,12 +43,10 @@ module.exports = ({
 
   const itemInfo = await tcr.getItemInfo(_itemID)
 
-  const shortenedLink = 'TEST' // TODO: REMOVE THIS
-  const tweetID = 'tweetIDTether' // TODO: REMOVE THIS
-  // const [shortenedLink, tweetID] = await Promise.all([
-  //   bitly.shorten(`${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${_itemID}`),
-  //   db.get(`${network.chainId}-${tcr.address}-${_itemID}`)
-  // ])
+  const [shortenedLink, tweetID] = await Promise.all([
+    bitly.shorten(`${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${_itemID}`),
+    db.get(`${network.chainId}-${tcr.address}-${_itemID}`)
+  ])
 
   const { status } = itemInfo
   const message = `${
