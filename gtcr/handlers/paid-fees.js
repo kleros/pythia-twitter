@@ -1,4 +1,4 @@
-const { PARTY } = require('../utils/enums')
+const { PARTY } = require('../../utils/enums')
 
 module.exports = ({ tcr, twitterClient, bitly, db, network }) => async (
   itemID,
@@ -20,11 +20,13 @@ module.exports = ({ tcr, twitterClient, bitly, db, network }) => async (
 
   console.info(message)
 
-  const tweet = await twitterClient.post('statuses/update', {
-    status: message,
-    in_reply_to_status_id: tweetID,
-    auto_populate_reply_metadata: true
-  })
+  if (twitterClient) {
+    const tweet = await twitterClient.post('statuses/update', {
+      status: message,
+      in_reply_to_status_id: tweetID,
+      auto_populate_reply_metadata: true
+    })
 
-  await db.put(`${network.chainId}-${tcr.address}-${itemID}`, tweet.id_str)
+    await db.put(`${network.chainId}-${tcr.address}-${itemID}`, tweet.id_str)
+  }
 }

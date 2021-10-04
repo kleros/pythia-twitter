@@ -1,5 +1,7 @@
-const { truncateETHAddress } = require('../utils/string')
-const { ITEM_STATUS } = require('../utils/enums')
+const delay = require('delay')
+
+const { truncateETHAddress } = require('../../utils/string')
+const { ITEM_STATUS } = require('../../utils/enums')
 
 module.exports = ({
   tcr,
@@ -10,6 +12,13 @@ module.exports = ({
   network,
   provider
 }) => async (_arbitrator, evidenceGroupID, party) => {
+  // When someone challenges a request with evidence, two handlers would
+  // be dispatched simultaneously (Dispute, Evidence).
+  // Which can result in the key not being found depending if the
+  // evidence executes faster.
+  // We work around this with a simple delay.
+  await delay(30 * 1000)
+
   const { _itemID: itemID } = (
     await provider.getLogs({
       ...tcr.filters.RequestEvidenceGroupID(null, null, evidenceGroupID),
@@ -38,11 +47,13 @@ module.exports = ({
 
   console.info(message)
 
-  const tweet = await twitterClient.post('statuses/update', {
-    status: message,
-    in_reply_to_status_id: tweetID,
-    auto_populate_reply_metadata: true
-  })
+  if (twitterClient) {
+    const tweet = await twitterClient.post('statuses/update', {
+      status: message,
+      in_reply_to_status_id: tweetID,
+      auto_populate_reply_metadata: true
+    })
 
-  await db.put(`${network.chainId}-${tcr.address}-${itemID}`, tweet.id_str)
+    await db.put(`${network.chainId}-${tcr.address}-${itemID}`, tweet.id_str)
+  }
 }

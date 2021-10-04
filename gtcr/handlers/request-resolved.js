@@ -1,5 +1,5 @@
-const { ITEM_STATUS } = require('../utils/enums')
-const { capitalizeFirstLetter } = require('../utils/string')
+const { ITEM_STATUS } = require('../../utils/enums')
+const { capitalizeFirstLetter } = require('../../utils/string')
 
 module.exports = ({
   tcr,
@@ -30,11 +30,13 @@ module.exports = ({
 
   console.info(message)
 
-  const tweet = await twitterClient.post('statuses/update', {
-    status: message,
-    in_reply_to_status_id: tweetID,
-    auto_populate_reply_metadata: true
-  })
+  if (twitterClient) {
+    const tweet = await twitterClient.post('statuses/update', {
+      status: message,
+      in_reply_to_status_id: tweetID,
+      auto_populate_reply_metadata: true
+    })
 
-  await db.put(`${network.chainId}-${tcr.address}-${_itemID}`, tweet.id_str)
+    await db.put(`${network.chainId}-${tcr.address}-${_itemID}`, tweet.id_str)
+  }
 }

@@ -2,13 +2,13 @@ const fetch = require('node-fetch')
 const ethers = require('ethers')
 
 const requestSubmittedHandler = require('./request-submitted')
-const evidenceSubmittedHandler = require('./evidence-submitted')
-const rulingEnforcedHandler = require('./ruling-enforced')
 const disputeHandler = require('./dispute')
 const requestResolvedHandler = require('./request-resolved')
+const rulingEnforcedHandler = require('./ruling-enforced')
+const evidenceSubmittedHandler = require('./evidence-submitted')
 const appealPossibleHandler = require('./appeal-possible')
 const appealDecisionHandler = require('./appeal-decision')
-const paidFeesHandler = require('./paid-fees')
+const { LGTCRS } = require('../../utils/enums')
 
 const {
   utils: { formatEther }
@@ -19,7 +19,7 @@ const {
  *
  * @param {object} args An object with listener parameters.
  * @param {object} args.tcr The TCR contract instance.
- * @param {object} args.gtcrView The view contract to batch TCR queries.
+ * @param {object} args.lightGtcrView The view contract to batch TCR queries.
  * @param {object} args.deploymentBlock The TCR contract instance.
  * @param {object} args.network The network object. Used to not mix content from different chains on the database.
  * @param {object} args.bitly Bitly client instance. Used to short links to save chars on tweet.
@@ -31,7 +31,7 @@ async function addTCRListeners({
   tcr,
   network,
   bitly,
-  gtcrView,
+  lightGtcrView,
   twitterClient,
   deploymentBlock,
   db,
@@ -46,12 +46,31 @@ async function addTCRListeners({
     })
   ).map(log => tcr.interface.parseLog(log))
   const { _evidence: metaEvidencePath } = logs[logs.length - 1].values
-  const tcrMetaEvidence = await (
-    await fetch(process.env.IPFS_GATEWAY + metaEvidencePath)
-  ).json()
+
+  let tcrMetaEvidence
+  try {
+    tcrMetaEvidence = await (
+      await fetch(process.env.IPFS_GATEWAY + metaEvidencePath)
+    ).json()
+  } catch (err) {
+    console.warn(
+      `Error fetching meta evidence for TCR @ ${tcr.address}, URL: ${process.env
+        .IPFS_GATEWAY + metaEvidencePath}`,
+      err
+    )
+    console.warn(`This TCR will not be tracked by the bot.`)
+    return
+  }
 
   // Fetch TCR data.
-  const data = await gtcrView.fetchArbitrable(tcr.address)
+  let data
+  try {
+    data = await lightGtcrView.fetchArbitrable(tcr.address)
+  } catch (err) {
+    console.warn(`Error fetching arbitrable data for TCR @ ${tcr.address}`, err)
+    console.warn(`This TCR will not be tracked by the bot.`)
+    return
+  }
   const tcrArbitrableData = {
     ...data,
     formattedEthValues: {
@@ -64,6 +83,15 @@ async function addTCRListeners({
       removalChallengeBaseDeposit: formatEther(data.removalChallengeBaseDeposit)
     }
   }
+
+  let lgtcrs = {}
+  try {
+    lgtcrs = JSON.parse(await db.get(LGTCRS))
+  } catch (err) {
+    if (err.type !== 'NotFoundError') throw new Error(err)
+  }
+  lgtcrs[tcr.address.toLowerCase()] = true
+  await db.put(LGTCRS, JSON.stringify(lgtcrs))
 
   // Submissions and removal requests.
   tcr.on(
@@ -134,11 +162,6 @@ async function addTCRListeners({
     })
   )
 
-  // Fully funded side.
-  tcr.on(
-    tcr.filters.HasPaidAppealFee(),
-    paidFeesHandler({ tcr, twitterClient, bitly, db, network })
-  )
   console.info(`Done fetching and setting up listeners for ${tcr.address}`)
 }
 
