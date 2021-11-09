@@ -39,7 +39,12 @@ module.exports = ({
     body: JSON.stringify(subgraphQuery)
   })
   const parsedValues = await response.json()
-  const requestType = parsedValues.data.lrequests[0].requestType
+  const { data } = parsedValues || {}
+  const { lrequests } = data || {}
+  const latestRequest = lrequests[0] || {}
+  const { requestType } = latestRequest || {}
+  if (!requestType)
+    throw new Error(`Request type not found bailing.`, subgraphQuery)
 
   const depositETH = truncateETHValue(
     requestType === 'RegistrationRequested'

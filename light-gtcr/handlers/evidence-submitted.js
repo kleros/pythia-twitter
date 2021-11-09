@@ -25,7 +25,6 @@ module.exports = ({
         lrequests (where: { evidenceGroupID: "${evidenceGroupID}"}) {
           item {
             itemID
-            status
           }
         }
       }
@@ -36,7 +35,12 @@ module.exports = ({
     body: JSON.stringify(subgraphQuery)
   })
   const parsedValues = await response.json()
-  const itemID = parsedValues.data.lrequests[0].item.itemID
+  const { data } = parsedValues || {}
+  const { lrequests } = data || {}
+  const latestRequest = lrequests ? lrequests[0] : {}
+  const { item } = latestRequest || {}
+  const { itemID } = item || {}
+  if (!itemID) throw new Error(`Could not find item ID`, subgraphQuery)
 
   const { status } = await tcr.getItemInfo(itemID)
   const {

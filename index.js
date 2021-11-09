@@ -9,7 +9,8 @@ const _LightGTCRFactory = require('./abis/LightGTCRFactory.json')
 const _LightGeneralizedTCRView = require('./abis/LightGeneralizedTCRView.json')
 
 const gtcrBot = require('./gtcr')
-const lightGtcrBot = require('./light-gtcr')
+// Light curate is the process of being deprecated in favor slot curate.
+// const lightGtcrBot = require('./light-gtcr')
 
 const db = level('./db')
 let twitterClient
@@ -41,17 +42,17 @@ const gtcrView = new ethers.Contract(
   provider
 )
 
-const lightGtcrFactory = new ethers.Contract(
-  process.env.LFACTORY_ADDRESS,
-  _LightGTCRFactory,
-  provider
-)
+// const lightGtcrFactory = new ethers.Contract(
+//   process.env.LFACTORY_ADDRESS,
+//   _LightGTCRFactory,
+//   provider
+// )
 
-const lightGtcrView = new ethers.Contract(
-  process.env.LGENERALIZED_TCR_VIEW_ADDRESS,
-  _LightGeneralizedTCRView,
-  provider
-)
+// const lightGtcrView = new ethers.Contract(
+//   process.env.LGENERALIZED_TCR_VIEW_ADDRESS,
+//   _LightGeneralizedTCRView,
+//   provider
+// )
 
 ;(async () => {
   console.info('Instantiating bitly client:', process.env.BITLY_TOKEN)
@@ -87,12 +88,12 @@ const lightGtcrView = new ethers.Contract(
   }
 
   gtcrBot(provider, gtcrFactory, twitterClient, gtcrView, db, bitly)
-  lightGtcrBot(
-    provider,
-    lightGtcrFactory,
-    twitterClient,
-    lightGtcrView,
-    db,
-    bitly
-  )
+  // lightGtcrBot(
+  //   provider,
+  //   lightGtcrFactory,
+  //   twitterClient,
+  //   lightGtcrView,
+  //   db,
+  //   bitly
+  // )
 })()
