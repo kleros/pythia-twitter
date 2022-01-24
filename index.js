@@ -3,36 +3,24 @@ const level = require('level')
 const Twitter = require('twitter-lite')
 const fetch = require('node-fetch')
 
-const _GTCRFactory = require('./abis/GTCRFactory.json')
 const _GeneralizedTCRView = require('./abis/GeneralizedTCRView.json')
-const _LightGTCRFactory = require('./abis/LightGTCRFactory.json')
-const _LightGeneralizedTCRView = require('./abis/LightGeneralizedTCRView.json')
+const _GeneralizedTCR = require('./abis/GeneralizedTCR.json')
 
 const gtcrBot = require('./gtcr')
-// Light curate is the process of being deprecated in favor slot curate.
-// const lightGtcrBot = require('./light-gtcr')
 
 const db = level('./db')
 let twitterClient
-if (
-  !!process.env.CONSUMER_KEY &&
-  !!process.env.CONSUMER_SECRET &&
-  !!process.env.ACCESS_TOKEN &&
-  !!process.env.ACCESS_TOKEN_SECRET
-)
+if (process.env.BEARER_TOKEN)
   twitterClient = new Twitter({
-    consumer_key: process.env.CONSUMER_KEY,
-    consumer_secret: process.env.CONSUMER_SECRET,
-    access_token_key: process.env.ACCESS_TOKEN,
-    access_token_secret: process.env.ACCESS_TOKEN_SECRET
+    bearer_token: process.env.BEARER_TOKEN
   })
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_URL)
 provider.pollingInterval = 60 * 1000 // Poll every minute.
 
-const gtcrFactory = new ethers.Contract(
-  process.env.FACTORY_ADDRESS,
-  _GTCRFactory,
+const pythia = new ethers.Contract(
+  process.env.PYTHIA_ADDRESS,
+  _GeneralizedTCR,
   provider
 )
 
@@ -41,18 +29,6 @@ const gtcrView = new ethers.Contract(
   _GeneralizedTCRView,
   provider
 )
-
-// const lightGtcrFactory = new ethers.Contract(
-//   process.env.LFACTORY_ADDRESS,
-//   _LightGTCRFactory,
-//   provider
-// )
-
-// const lightGtcrView = new ethers.Contract(
-//   process.env.LGENERALIZED_TCR_VIEW_ADDRESS,
-//   _LightGeneralizedTCRView,
-//   provider
-// )
 
 ;(async () => {
   console.info('Instantiating bitly client:', process.env.BITLY_TOKEN)
@@ -87,13 +63,5 @@ const gtcrView = new ethers.Contract(
       }`
   }
 
-  gtcrBot(provider, gtcrFactory, twitterClient, gtcrView, db, bitly)
-  // lightGtcrBot(
-  //   provider,
-  //   lightGtcrFactory,
-  //   twitterClient,
-  //   lightGtcrView,
-  //   db,
-  //   bitly
-  // )
+  gtcrBot(provider, pythia, twitterClient, gtcrView, db, bitly)
 })()

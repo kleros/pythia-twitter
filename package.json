@@ -14,12 +14,13 @@
     "release": "standard-version"
   },
   "dependencies": {
+    "@kleros/gtcr-encoder": "^1.4.0",
     "delay": "^5.0.0",
     "dotenv-safe": "^8.2.0",
-    "ethers": "^4.0.44",
+    "ethers": "^5.5.3",
     "level": "^6.0.0",
     "node-fetch": "^2.6.1",
-    "twitter-lite": "^0.9.4"
+    "twitter-lite": "^1.1.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",
