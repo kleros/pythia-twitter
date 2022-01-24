@@ -1,5 +1,5 @@
 <p align="center">
-  <b style="font-size: 32px;">GTCR Twitter Bot </b>
+  <b style="font-size: 32px;">Pythia Twitter Bot </b>
 </p>
 
 <p align="center">
@@ -9,7 +9,7 @@
   <a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/styled_with-prettier-ff69b4.svg" alt="Styled with Prettier"></a>
 </p>
 
-Watch and tweet about Generalized TCR events.
+Watch and tweet about pythia accusations.
 
 ## Prerequisites
 
@@ -28,5 +28,5 @@ Watch and tweet about Generalized TCR events.
 ## Other Scripts
 
 - `yarn format` - Lint, fix and prettify all the project.
-.js files with styled components and .js files.
+  .js files with styled components and .js files.
 - `yarn run cz` - Run commitizen.
