@@ -10,9 +10,17 @@ const gtcrBot = require('./gtcr')
 
 const db = level('./db')
 let twitterClient
-if (process.env.BEARER_TOKEN)
+if (
+  !!process.env.CONSUMER_KEY &&
+  !!process.env.CONSUMER_KEY_SECRET &&
+  !!process.env.ACCESS_TOKEN &&
+  !!process.env.ACCESS_TOKEN_SECRET
+)
   twitterClient = new Twitter({
-    bearer_token: process.env.BEARER_TOKEN
+    consumer_key: process.env.CONSUMER_KEY,
+    consumer_secret: process.env.CONSUMER_KEY_SECRET,
+    access_token_key: process.env.ACCESS_TOKEN,
+    access_token_secret: process.env.ACCESS_TOKEN_SECRET
   })
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_URL)

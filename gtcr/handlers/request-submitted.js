@@ -1,5 +1,4 @@
 const { truncateETHValue } = require('../../utils/string')
-const { ITEM_STATUS } = require('../../utils/enums')
 const { gtcrDecode } = require('@kleros/gtcr-encoder')
 
 module.exports = ({
@@ -7,12 +6,11 @@ module.exports = ({
   tcrMetaEvidence,
   tcrArbitrableData,
   twitterClient,
-  bitly,
   db,
   network
 }) => async (_itemID, _submitter, _requestType) => {
   const {
-    formattedEthValues: { submissionBaseDeposit, removalBaseDeposit }
+    formattedEthValues: { submissionBaseDeposit }
   } = tcrArbitrableData
 
   const { data: itemData } = await tcr.getItemInfo(_itemID)
@@ -20,34 +18,35 @@ module.exports = ({
     columns: tcrMetaEvidence.metadata.columns,
     values: itemData
   })
-  const tweetURL = decodedData[0]
-  const tweetID = tweetURL.slice(
-    tweetURL.lastIndexOf('/') + 1,
-    tweetURL.lastIndexOf('?')
-  )
 
-  const shortenedLink = await bitly.shorten(
-    `${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${_itemID}?chainId=100`
-  )
+  let tweetURL = decodedData[0]
+  const hasPhoto = tweetURL.lastIndexOf('/photo') > -1
+  if (hasPhoto) tweetURL = tweetURL.slice(0, tweetURL.indexOf('/photo'))
+  const hasQueryParam = tweetURL.lastIndexOf('?') > -1
+  if (hasQueryParam) tweetURL = tweetURL.slice(0, tweetURL.lastIndexOf('?'))
 
-  const depositETH = truncateETHValue(
-    _requestType === ITEM_STATUS.SUBMITTED
-      ? submissionBaseDeposit
-      : removalBaseDeposit
-  )
+  const tweetID = tweetURL.slice(tweetURL.lastIndexOf('/') + 1)
+
+  const depositETH = truncateETHValue(submissionBaseDeposit)
   const message = `Someone accused this tweet of containing false information on Pythia. Verify it for a chance to win ${depositETH} #DAI
-      \n\nListing: ${shortenedLink}`
+          \n\nListing: ${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${_itemID}?chainId=100`
 
-  console.info(message)
-
-  if (twitterClient) {
-    const tweet = await twitterClient.post('statuses/update', {
+  try {
+    const resp = await twitterClient.get('statuses/show', {
+      id: tweetID
+    })
+    const normalizedTweetID = resp.id_str
+    await twitterClient.post('statuses/update', {
       status: message,
-      in_reply_to_status_id: tweetID,
+      in_reply_to_status_id: normalizedTweetID,
       auto_populate_reply_metadata: true
     })
-    console.info('tweeting', message)
-
-    await db.put(`${network.chainId}-${tcr.address}-${_itemID}`, tweet.id_str)
+    await db.put(
+      `${network.chainId}-${tcr.address}-${_itemID}`,
+      normalizedTweetID
+    )
+  } catch (err) {
+    console.error('Error tweeting')
+    console.error(err)
   }
 }
