@@ -23,7 +23,7 @@ Watch and tweet about pythia accusations.
 
 > To run the service in production mode use `node -r dotenv/config index.js`.
 
-> To start with PM2 use `pm2 start --node-args="-r dotenv/config" index.js --name gtcr-twitter-bot`
+> To start with PM2 use `pm2 start --node-args="-r dotenv/config" index.js --name pythia-twitter`
 
 ## Other Scripts
 
