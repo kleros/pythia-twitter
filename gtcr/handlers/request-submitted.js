@@ -19,6 +19,9 @@ module.exports = ({
     values: itemData
   })
 
+  console.log("Received a tweet", itemData)
+  console.log("Decoded data", decodedData)
+
   let tweetURL = decodedData[0]
   const hasPhoto = tweetURL.lastIndexOf('/photo') > -1
   if (hasPhoto) tweetURL = tweetURL.slice(0, tweetURL.indexOf('/photo'))
@@ -27,20 +30,26 @@ module.exports = ({
 
   const tweetID = tweetURL.slice(tweetURL.lastIndexOf('/') + 1)
 
+  console.log("Tweet ID:", tweetID)
+
   const depositETH = truncateETHValue(submissionBaseDeposit)
   const message = `Someone accused this tweet of containing false information on Pythia. Verify it for a chance to win ${depositETH} #DAI
-          \n\nListing: ${process.env.GTCR_UI_URL}/tcr/${tcr.address}/${_itemID}?chainId=100`
+          \n\nListing: ${process.env.GTCR_UI_URL}/tcr/100/${tcr.address}/${_itemID}`
 
   try {
+    console.log("Querying tweet")
     const resp = await twitterClient.get('statuses/show', {
       id: tweetID
     })
+    console.log("Received tweet", resp)
+    console.log("Posting tweet")
     const normalizedTweetID = resp.id_str
-    await twitterClient.post('statuses/update', {
+    const postResponse = await twitterClient.post('statuses/update', {
       status: message,
       in_reply_to_status_id: normalizedTweetID,
       auto_populate_reply_metadata: true
     })
+    console.log("Posted, response:", postResponse)
     await db.put(
       `${network.chainId}-${tcr.address}-${_itemID}`,
       normalizedTweetID
